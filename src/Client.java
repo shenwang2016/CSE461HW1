@@ -24,27 +24,40 @@ public class Client {
 		
 		// needs header
 		String sentence = "hello world";
-		int payload_length = sentence.length();
+		int payload_length = sentence.getBytes().length;
 		// stage a, buffer should contain hello world
 		// added 4 bytes just to play safe
 		// stage a 1
-		byte[] sendData = new byte[payload_length + 12 + 4
-		                           - payload_length % 4];
-		int header_field_1 = payload_length;  // 4 bytes
-		int header_field_2 = 0;  // 4 bytes
-		short header_field_3 = 1;  // 2 bytes
-		short header_field_4 = 927;  // 2 bytes
+		// if payload size can be divided by 4, we don't need padding
+		byte[] sendData;
+		if(payload_length % 4 == 0) {
+			sendData = new byte[payload_length + 12];
+		} else { // we need padding payload to be divisible by 4
+		    sendData = new byte[payload_length + 12 + 4 - payload_length % 4];
+		}
+		//int payload_len = payload_length;  // 4 bytes
+		int psecret = 0;  // 4 bytes
+		short step_num = 1;  // 2 bytes
+		short student_id = 927;  // 2 bytes
 		ByteBuffer header = ByteBuffer.allocate(12);
-		header.putInt(header_field_1).putInt(header_field_2)
-		.putShort(header_field_3).putShort(header_field_4);
+		// put fields into header
+		header.putInt(payload_length).putInt(psecret).putShort(step_num).putShort(student_id);
+		// save header info into sendData[]
 		byte[] header_array = header.array();
 		for (int i = 0; i < 12; i++) {
 			sendData[i] = header_array[i];
 		}
+		// save payload into sendData[]
 		byte[] sentence_byte = sentence.getBytes();
-		sentence_byte = padding(sentence_byte, payload_length);
+		//sentence_byte = padding(sentence_byte, payload_length);
 		for (int i = 0; i < payload_length; i++) {
-			sendData[i + 12] = sentence_byte[i];
+			// save sentence info
+			if(i < sentence_byte.length) {
+			   sendData[i + 12] = sentence_byte[i];
+			} else { // add padding
+			    byte temp = 0;
+			    sendData[i + 12] = temp;
+			}
 		}
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 12235);
 		clientSocket.send(sendPacket);
@@ -59,6 +72,7 @@ public class Client {
 	
 	public static byte[] padding(byte[] ba, int content_length) {
 		int padding_num = 4 - content_length % 4;
+		// if content length is not divisible by 4, we need add padding
 		if (padding_num < 4) {
 			while (padding_num > 0) {
 				byte temp = 0;
