@@ -28,7 +28,8 @@ public class Client {
 		// stage a, buffer should contain hello world
 		// added 4 bytes just to play safe
 		// stage a 1
-		byte[] sendData = new byte[payload_length + 12 + 4];
+		byte[] sendData = new byte[payload_length + 12 + 4
+		                           - payload_length % 4];
 		int header_field_1 = payload_length;  // 4 bytes
 		int header_field_2 = 0;  // 4 bytes
 		short header_field_3 = 1;  // 2 bytes
