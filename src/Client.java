@@ -23,7 +23,7 @@ public class Client {
 		// This part is a sample code that sends out a UDP packet
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
-		
+
 		// needs header
 		String sentence = "hello world";
 		int payload_length = sentence.getBytes().length;
@@ -63,16 +63,21 @@ public class Client {
 		}
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 12235);
 		clientSocket.send(sendPacket);
+		System.out.println("stage a1 done");
 		// stage a 2
 		byte[] receiveData = new byte[28];
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		System.out.println("before receive");
 		clientSocket.receive(receivePacket);
+		System.out.println("after receive");
 		byte[] fromServer = receivePacket.getData();
+		assert(fromServer.length == 28);
 		byte[] payload_server = new byte[16];
 		for (int i = 12; i < 28; i++) {
 			payload_server[i - 12] = fromServer[i];
 		}
 		int[] data = decryptSecret(payload_server);
+		System.out.println("stage a2 done");
 		clientSocket.close();
 	}
 	
