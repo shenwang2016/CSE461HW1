@@ -4,6 +4,8 @@
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 /**
  * @author ylh96
  *
@@ -65,8 +67,12 @@ public class Client {
 		byte[] receiveData = new byte[28];
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		clientSocket.receive(receivePacket);
-		String modifiedSentence = new String(receivePacket.getData());
-		System.out.println("FROM SERVER:" + modifiedSentence);
+		byte[] fromServer = receivePacket.getData();
+		byte[] payload_server = new byte[16];
+		for (int i = 12; i < 28; i++) {
+			payload_server[i - 12] = fromServer[i];
+		}
+		int[] data = decryptSecret(payload_server);
 		clientSocket.close();
 	}
 	
@@ -83,8 +89,14 @@ public class Client {
 		return ba;
 	}
 	
-	public static String decryptSecret(String fromServer) {
-		return null;
+	public static int[] decryptSecret(byte[] byteArray) {
+		IntBuffer intBuf =
+				   ByteBuffer.wrap(byteArray)
+				     .order(ByteOrder.BIG_ENDIAN)
+				     .asIntBuffer();
+		int[] array = new int[intBuf.remaining()];
+		intBuf.get(array);
+		return array;
 	}
 
 }
