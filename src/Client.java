@@ -19,13 +19,11 @@ public class Client {
 		// TODO Auto-generated method stub
 		
 		// This part is a sample code that sends out a UDP packet
-		BufferedReader inFromUser =
-		         new BufferedReader(new InputStreamReader(System.in));
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		
 		// needs header
-		String sentence = inFromUser.readLine();
+		String sentence = "hello world";
 		int payload_length = sentence.length();
 		// stage a, buffer should contain hello world
 		// added 4 bytes just to play safe
