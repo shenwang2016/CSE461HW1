@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 /**
- * @author ylh96
+ * @author Yilun Hua(1428927), Shen Wang()
  *
  */
 public class Client {
@@ -46,6 +46,7 @@ public class Client {
 		header.putInt(payload_length).putInt(psecret).putShort(step_num).putShort(student_id);
 		// save header info into sendData[]
 		byte[] header_array = header.array();
+		System.out.println(header_array.length);
 		for (int i = 0; i < 12; i++) {
 			sendData[i] = header_array[i];
 		}
