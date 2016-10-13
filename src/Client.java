@@ -84,10 +84,6 @@ public class Client {
 			payload_server[i - 12] = fromServer[i];
 		}
 		int[] data = decryptSecret(payload_server);
-		for (int i = 0; i < data.length; i++) {
-			System.out.println(data[i]);
-		}
-		System.out.println("stage a2 done");
 		secrets[0] = data[3];
 		// part b starts here
 		int count_num = 0;
@@ -100,16 +96,24 @@ public class Client {
 			if (len_payload % 4 == 0) {
 				sendData_b = new byte[len_payload + 4 + 12];
 			} else {
-				sendData_b = new byte[len_payload + 4 + 4 - len_payload % 4 + 12];
+				sendData_b = new byte[len_payload + 4 + (4 - len_payload % 4) + 12];
 			}
+			byte[] len_byte = ByteBuffer.allocate(4).putInt(len_payload).array();
+			assert(len_byte.length == 4);
+			// add header
 			for (int i = 0; i < 12; i++) {
-				sendData_b[i] = header_array[i];
+				if( i < 4) {
+				   sendData_b[i] = len_byte[i];
+				} else {
+					sendData_b[i] = header_array[i-4];
+				}
 			}
-			// done adding header
+			// add packet id
 			byte[] packet_id = ByteBuffer.allocate(4).putInt(count_num).array();
 			for (int i = 0; i < 4; i++) {
 				sendData_b[i + 12] = packet_id[i];
 			}
+			// add payload content: 0s
 			for (int i = 0; i < len_payload; i++) {
 				sendData_b[i + 16] = 0;
 			}
