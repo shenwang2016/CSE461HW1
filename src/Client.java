@@ -30,6 +30,10 @@ public class Client {
 		String sentence = "hello world";
 		sentence += "\0";
 		int payload_length = sentence.getBytes().length;
+		//
+		System.out.println(payload_length);
+		//
+		
 		// stage a, buffer should contain hello world
 		// added 4 bytes just to play safe
 		// stage a 1
@@ -78,7 +82,17 @@ public class Client {
 		System.out.println("after receive");
 		byte[] fromServer = receivePacket.getData();
 		assert(fromServer.length == 28);
-		byte[] payload_server = new byte[16];
+		
+		// assure returning packet_header is the same starts here
+		byte[] return_packet_header = new byte[4];
+		for (int i = 0; i < 4; i++) {
+			return_packet_header[i] = fromServer[i];
+		}
+		int[] array_int = decryptSecret(return_packet_header);
+		System.out.println(array_int[0]);
+		// assure returning packet_header is the same ends here
+		
+		byte[] payload_server = new byte[array_int[0]];
 		for (int i = 12; i < 28; i++) {
 			payload_server[i - 12] = fromServer[i];
 		}
@@ -94,13 +108,32 @@ public class Client {
 		int port_num = data[2];
 		int len_payload = data[1];
 		while (true) {
-			int payload_first = count_num;
-			byte[] sendData_b = new byte[len_payload + 4 + 4 - len_payload % 4];
+			// adding header starts from here
+			byte[] sendData_b;
+			if (len_payload % 4 == 0) {
+				sendData_b = new byte[len_payload + 4 + 12];
+			} else {
+				sendData_b = new byte[len_payload + 4 + 4 - len_payload % 4 + 12];
+			}
+			for (int i = 0; i < 12; i++) {
+				sendData_b[i] = header_array[i];
+			}
+			// done adding header
+			byte[] packet_id = ByteBuffer.allocate(4).putInt(count_num).array();
+			for (int i = 0; i < 4; i++) {
+				sendData_b[i + 12] = packet_id[i];
+			}
+			for (int i = 0; i < len_payload; i++) {
+				sendData_b[i + 16] = 0;
+			}
+			DatagramPacket sendPacket_b = new DatagramPacket(sendData_b, sendData_b.length, IPAddress, port_num);
+			clientSocket.send(sendPacket_b);
 			
 			
 			if (count_num == count_max) {
 				break;
 			}
+			count_num++;
 		}
 		
 		
