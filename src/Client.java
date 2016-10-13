@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 /**
- * @author Yilun Hua(1428927), Shen Wang()
+ * @author Yilun Hua (1428927), Shen Wang (1571169)
  *
  */
 public class Client {
@@ -69,14 +69,14 @@ public class Client {
 		// extract data from server packet
 		byte[] fromServer = receivePacket.getData();
 		
-		// assure returning packet_header is the same starts here
-		byte[] return_packet_header = new byte[4];
+		// assure returning packet_header payload_len is the same starts here
+		byte[] return_packet_header_payload_len = new byte[4];
 		for (int i = 0; i < 4; i++) {
-			return_packet_header[i] = fromServer[i];
+			return_packet_header_payload_len[i] = fromServer[i];
 		}
-		int[] array_int = decryptSecret(return_packet_header);
+		int[] array_int = decryptSecret(return_packet_header_payload_len);
 		System.out.println(array_int[0]);
-		// assure returning packet_header is the same ends here
+		// assure returning packet_header payload_len is the same ends here
 		
 		byte[] payload_server = new byte[array_int[0]];
 		for (int i = 12; i < 28; i++) {
