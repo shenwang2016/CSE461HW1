@@ -23,9 +23,12 @@ public class Client {
 		// This part is a sample code that sends out a UDP packet
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
+		
+		int[] secrets = new int[4];
 
 		// needs header
 		String sentence = "hello world";
+		sentence += "\0";
 		int payload_length = sentence.getBytes().length;
 		// stage a, buffer should contain hello world
 		// added 4 bytes just to play safe
@@ -69,6 +72,8 @@ public class Client {
 		byte[] receiveData = new byte[28];
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		System.out.println("before receive");
+		System.out.println(clientSocket.isClosed());
+		clientSocket.setSoTimeout(2000);
 		clientSocket.receive(receivePacket);
 		System.out.println("after receive");
 		byte[] fromServer = receivePacket.getData();
@@ -78,7 +83,27 @@ public class Client {
 			payload_server[i - 12] = fromServer[i];
 		}
 		int[] data = decryptSecret(payload_server);
+		for (int i = 0; i < data.length; i++) {
+			System.out.println(data[i]);
+		}
 		System.out.println("stage a2 done");
+		secrets[0] = data[3];
+		// part b starts here
+		int count_num = 0;
+		int count_max = data[0];
+		int port_num = data[2];
+		int len_payload = data[1];
+		while (true) {
+			int payload_first = count_num;
+			byte[] sendData_b = new byte[len_payload + 4 + 4 - len_payload % 4];
+			
+			
+			if (count_num == count_max) {
+				break;
+			}
+		}
+		
+		
 		clientSocket.close();
 	}
 	
