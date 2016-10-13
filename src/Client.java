@@ -139,6 +139,18 @@ public class Client {
 				break;
 			}
 		}
+		byte[] receiveData_b = new byte[20];
+		DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
+		clientSocket.receive(receivePacket_b);
+		byte[] data_b = new byte[8];
+		for (int i = 0; i < 8; i++) {
+			data_b[i] = receiveData_b[i + 12];
+		}
+		int[] fromB = decryptSecret(data_b);
+		for (int i = 0; i < fromB.length; i++) {
+			System.out.println(fromB[i]);
+		}
+		// step b done
 		clientSocket.close();
 	}
 	
