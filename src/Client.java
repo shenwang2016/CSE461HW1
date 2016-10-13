@@ -115,11 +115,24 @@ public class Client {
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData_b, sendData_b.length, IPAddress, port_num);
 			clientSocket.send(sendPacket_b);
 			
-			
-			if (count_num == count_max) {
+			// Ack packet
+			// send packet from server to client
+			byte[] receiveData_b = new byte[16];
+			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
+			clientSocket.receive(receivePacket_b);
+			// extract data from server packet
+			byte[] fromServer_b = receivePacket_b.getData();
+			byte[] ack_id_array = new byte[4];
+			for (int i = 0; i < 4; i++) {
+				ack_id_array[i] = fromServer_b[i + 12];
+			}
+			int[] ack_id = decryptSecret(ack_id_array);
+			if (ack_id[0] == count_num) {
+				count_num++;
+			}
+			if (count_num > count_max) {
 				break;
 			}
-			count_num++;
 		}
 		
 		
