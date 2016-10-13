@@ -27,7 +27,8 @@ public class Client {
 		// in stage a, buffer should contain hello world
 		String sentence = "hello world";
 		sentence += "\0"; // add end mark
-		int payload_length = sentence.getBytes().length;
+		byte[] sentence_byte = sentence.getBytes("ISO-8859-1");
+		int payload_length = sentence_byte.length;
 		// stage a1
 		byte[] sendData;
 		// if payload size can be divided by 4, we don't need padding
@@ -48,7 +49,6 @@ public class Client {
 			sendData[i] = header_array[i];
 		}
 		// save payload into sendData[]
-		byte[] sentence_byte = sentence.getBytes();
 		for (int i = 0; i < payload_length; i++) {
 			// save sentence info
 			if(i < sentence_byte.length) {
@@ -89,6 +89,7 @@ public class Client {
 		int count_num = 0;
 		int count_max = data[0];
 		int port_num = data[2];
+		System.out.println(port_num);
 		int len_payload = data[1];
 		while (true) {
 			System.out.println("start of while");
@@ -124,6 +125,7 @@ public class Client {
 			byte[] receiveData_b = new byte[16];
 			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
 			System.out.println("entering try catch");
+			System.out.println(clientSocket.isConnected());
 			// set retransmit interval
 			try{ 
 				System.out.println("receive");
