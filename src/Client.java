@@ -121,7 +121,7 @@ public class Client {
 			// set retransmit interval
 			clientSocket.setSoTimeout(500);
 			try{ 
-			  clientSocket.send(sendPacket_b);
+				clientSocket.send(sendPacket_b);
 			} catch (SocketTimeoutException e) {
 				continue;
 			}
