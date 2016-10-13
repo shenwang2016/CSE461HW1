@@ -118,16 +118,21 @@ public class Client {
 				sendData_b[i + 16] = 0;
 			}
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData_b, sendData_b.length, IPAddress, port_num);
-			clientSocket.send(sendPacket_b);
-			
+			// set retransmit interval
+			clientSocket.setSoTimeout(500);
+			try{ 
+			  clientSocket.send(sendPacket_b);
+			} catch (SocketTimeoutException e) {
+				continue;
+			}
+			byte[] receiveData_b = new byte[16];
+			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
+			clientSocket.receive(receivePacket_b);
 			count_num++;
 			if (count_num == count_max) {
 				break;
 			}
-			
 		}
-		
-		
 		clientSocket.close();
 	}
 	
