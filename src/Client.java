@@ -74,10 +74,11 @@ public class Client {
 		for (int i = 0; i < 4; i++) {
 			return_packet_header_payload_len[i] = fromServer[i];
 		}
+		// get the length of receiving payload
 		int[] array_int = decryptSecret(return_packet_header_payload_len);
-		System.out.println(array_int[0]);
-		// assure returning packet_header payload_len is the same ends here
+        // assure returning packet_header payload_len is the same ends here
 		
+		// get packet payload
 		byte[] payload_server = new byte[array_int[0]];
 		for (int i = 12; i < 28; i++) {
 			payload_server[i - 12] = fromServer[i];
@@ -115,24 +116,11 @@ public class Client {
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData_b, sendData_b.length, IPAddress, port_num);
 			clientSocket.send(sendPacket_b);
 			
-			// Ack packet
-			// send packet from server to client
-			byte[] receiveData_b = new byte[16];
-			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
-			clientSocket.receive(receivePacket_b);
-			// extract data from server packet
-			byte[] fromServer_b = receivePacket_b.getData();
-			byte[] ack_id_array = new byte[4];
-			for (int i = 0; i < 4; i++) {
-				ack_id_array[i] = fromServer_b[i + 12];
-			}
-			int[] ack_id = decryptSecret(ack_id_array);
-			if (ack_id[0] == count_num) {
-				count_num++;
-			}
-			if (count_num > count_max) {
+			
+			if (count_num == count_max) {
 				break;
 			}
+			count_num++;
 		}
 		
 		
