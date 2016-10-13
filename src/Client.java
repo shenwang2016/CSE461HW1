@@ -128,7 +128,13 @@ public class Client {
 			byte[] receiveData_b = new byte[16];
 			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
 			clientSocket.receive(receivePacket_b);
-			count_num++;
+			byte[] ack_array = new byte[4];
+			int[] ack_id = decryptSecret(ack_array);
+			if (ack_id[0] == count_num) {
+				count_num++;
+			} else {
+				continue;
+			}
 			if (count_num == count_max) {
 				break;
 			}
