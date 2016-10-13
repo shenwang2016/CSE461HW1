@@ -91,6 +91,7 @@ public class Client {
 		int port_num = data[2];
 		int len_payload = data[1];
 		while (true) {
+			System.out.println("start of while");
 			// adding header starts from here
 			byte[] sendData_b;
 			if (len_payload % 4 == 0) {
@@ -118,16 +119,21 @@ public class Client {
 				sendData_b[i + 16] = 0;
 			}
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData_b, sendData_b.length, IPAddress, port_num);
-			// set retransmit interval
-			clientSocket.setSoTimeout(500);
-			try{ 
-				clientSocket.send(sendPacket_b);
-			} catch (SocketTimeoutException e) {
-				continue;
-			}
+			clientSocket.send(sendPacket_b);
+			System.out.println("sent");
 			byte[] receiveData_b = new byte[16];
 			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
-			clientSocket.receive(receivePacket_b);
+			System.out.println("entering try catch");
+			// set retransmit interval
+			try{ 
+				System.out.println("receive");
+				clientSocket.setSoTimeout(500);
+				clientSocket.receive(receivePacket_b);
+				System.out.println("after receive");
+			} catch (SocketTimeoutException e) {
+				System.out.println("continue");
+				continue;
+			}
 			byte[] ack_array = new byte[4];
 			int[] ack_id = decryptSecret(ack_array);
 			if (ack_id[0] == count_num) {
