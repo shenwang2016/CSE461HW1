@@ -120,11 +120,11 @@ public class Client {
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData_b, sendData_b.length, IPAddress, port_num);
 			clientSocket.send(sendPacket_b);
 			
-			
+			count_num++;
 			if (count_num == count_max) {
 				break;
 			}
-			count_num++;
+			
 		}
 		
 		
