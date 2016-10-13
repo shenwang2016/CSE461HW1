@@ -18,48 +18,37 @@ public class Client {
 	 * @throws UnknownHostException 
 	 */
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		// TODO Auto-generated method stub
 		
 		// This part is a sample code that sends out a UDP packet
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
-		
+		// array to store secrets
 		int[] secrets = new int[4];
-
-		// needs header
+		// in stage a, buffer should contain hello world
 		String sentence = "hello world";
-		sentence += "\0";
+		sentence += "\0"; // add end mark
 		int payload_length = sentence.getBytes().length;
-		//
-		System.out.println(payload_length);
-		//
-		
-		// stage a, buffer should contain hello world
-		// added 4 bytes just to play safe
-		// stage a 1
-		// if payload size can be divided by 4, we don't need padding
+		// stage a1
 		byte[] sendData;
-		if(payload_length % 4 == 0) {
+		// if payload size can be divided by 4, we don't need padding
+        if(payload_length % 4 == 0) {
 			sendData = new byte[payload_length + 12];
 		} else { // we need padding payload to be divisible by 4
 		    sendData = new byte[payload_length + 12 + 4 - payload_length % 4];
 		}
-		//int payload_len = payload_length;  // 4 bytes
 		int psecret = 0;  // 4 bytes
 		short step_num = 1;  // 2 bytes
 		short student_id = 927;  // 2 bytes
 		ByteBuffer header = ByteBuffer.allocate(12);
-		// put fields into header
+		// save fields into header
 		header.putInt(payload_length).putInt(psecret).putShort(step_num).putShort(student_id);
 		// save header info into sendData[]
 		byte[] header_array = header.array();
-		System.out.println(header_array.length);
 		for (int i = 0; i < 12; i++) {
 			sendData[i] = header_array[i];
 		}
 		// save payload into sendData[]
 		byte[] sentence_byte = sentence.getBytes();
-		//sentence_byte = padding(sentence_byte, payload_length);
 		for (int i = 0; i < payload_length; i++) {
 			// save sentence info
 			if(i < sentence_byte.length) {
@@ -69,19 +58,16 @@ public class Client {
 			    sendData[i + 12] = temp;
 			}
 		}
+		// send packet from client to server
 		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 12235);
 		clientSocket.send(sendPacket);
-		System.out.println("stage a1 done");
-		// stage a 2
+		// stage a2
+		// send packet from server to client
 		byte[] receiveData = new byte[28];
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		System.out.println("before receive");
-		System.out.println(clientSocket.isClosed());
-		clientSocket.setSoTimeout(2000);
 		clientSocket.receive(receivePacket);
-		System.out.println("after receive");
+		// extract data from server packet
 		byte[] fromServer = receivePacket.getData();
-		assert(fromServer.length == 28);
 		
 		// assure returning packet_header is the same starts here
 		byte[] return_packet_header = new byte[4];
