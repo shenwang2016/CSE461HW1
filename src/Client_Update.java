@@ -1,7 +1,10 @@
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -31,11 +34,29 @@ public class Client_Update {
 		assert(result_from_b.length == 2);
 		secrets[1] = result_from_a[1];
 		System.out.println("Stage B done");
+		byte[] result_from_c_byte = part1_stageC(result_from_b);
+		ByteBuffer from_c = ByteBuffer.wrap(result_from_c_byte);
+		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
+		char character_from_c = from_c.getChar(24);
+		System.out.println(result_from_c[0]);
+		System.out.println(result_from_c[1]);
+		System.out.println(result_from_c[2]);
+		System.out.println(character_from_c);
+		System.out.println("Stage C done");
+		
 	}
 	
-	public static int[] part1_stageC() throws Exception {
-		
-		return null;
+	public static byte[] part1_stageC(int[] data_from_prev) throws Exception {
+		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
+		Socket socket = new Socket(IPAddress, data_from_prev[0]);
+		// Again, probably better to store these objects references in the support class
+		InputStream in = socket.getInputStream();
+	    DataInputStream dis = new DataInputStream(in);
+
+	    byte[] data = new byte[28];
+	    dis.readFully(data);
+	    socket.close();
+		return data;
 	}
 	
 	public static int[] part1_stageB(int[] data_from_prev) throws Exception {
