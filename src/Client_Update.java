@@ -48,11 +48,27 @@ public class Client_Update {
 	
 	public static byte[] part1_stageC(int[] data_from_prev) throws Exception {
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
+		// client open socket
 		Socket socket = new Socket(IPAddress, data_from_prev[0]);
-		// Again, probably better to store these objects references in the support class
+		int error_count = 0;
+		int max_error = 100;
+		while(true) {
+			if(socket.isConnected()) {
+				break;
+			} else{
+				error_count++;
+				if(error_count == max_error) {
+					socket.close();
+					System.out.println("Failed");
+					return null;
+				}
+			}
+			
+		}
+		// server send packet
 		InputStream in = socket.getInputStream();
 	    DataInputStream dis = new DataInputStream(in);
-
+        
 	    byte[] data = new byte[28];
 	    dis.readFully(data);
 	    socket.close();
