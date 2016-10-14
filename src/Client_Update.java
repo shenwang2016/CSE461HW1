@@ -102,11 +102,18 @@ public class Client_Update {
 		byte[] receiveData_b = new byte[20];
 		DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
 		System.out.println("Receive final packet");
+		int count_fail = 0;
+		int max_fail_before_drop = 100;
 		while (true) {
 			try{
 				clientSocket.receive(receivePacket_b);
 				break;
 			} catch (SocketTimeoutException e) {
+				count_fail++;
+				if (count_fail == max_fail_before_drop) {
+					clientSocket.close();
+					return null;
+				}
 				System.out.println("continue");
 				continue;
 			}
