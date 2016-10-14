@@ -85,6 +85,9 @@ public class Client {
 		}
 		int[] data = decryptSecret(payload_server);
 		secrets[0] = data[3];
+		for (int i = 0; i < 4; i++) {
+			System.out.println(data[i]);
+		}
 		// part b starts here
 		int count_num = 0;
 		int count_max = data[0];
@@ -100,14 +103,17 @@ public class Client {
 			} else {
 				sendData_b = new byte[len_payload + 4 + (4 - len_payload % 4) + 12];
 			}
-			byte[] len_byte = ByteBuffer.allocate(4).putInt(len_payload).array();
+			byte[] len_byte = ByteBuffer.allocate(4).putInt(len_payload + 4).array();
+			byte[] secret_b = ByteBuffer.allocate(4).putInt(data[3]).array();
 			assert(len_byte.length == 4);
 			// add header
 			for (int i = 0; i < 12; i++) {
-				if( i < 4) {
-				   sendData_b[i] = len_byte[i];
+				if(i < 4) {
+					sendData_b[i] = len_byte[i];
+				} else if (i < 8) {
+					sendData_b[i] = secret_b[i - 4];
 				} else {
-					sendData_b[i] = header_array[i-4];
+					sendData_b[i] = header_array[i];
 				}
 			}
 			// add packet id
@@ -117,10 +123,13 @@ public class Client {
 			}
 			// add payload content: 0s
 			for (int i = 0; i < len_payload; i++) {
-				sendData_b[i + 16] = 0;
+				sendData_b[i + 16] = (byte) 0;
 			}
+			clientSocket.connect(IPAddress, port_num);
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData_b, sendData_b.length, IPAddress, port_num);
+			System.out.println(clientSocket.isConnected());
 			clientSocket.send(sendPacket_b);
+			System.out.println(clientSocket.isConnected());
 			System.out.println("sent");
 			byte[] receiveData_b = new byte[16];
 			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
@@ -137,6 +146,9 @@ public class Client {
 				continue;
 			}
 			byte[] ack_array = new byte[4];
+			for (int i = 0; i < 4; i++) {
+				ack_array[i] = receiveData[i + 12];
+			}
 			int[] ack_id = decryptSecret(ack_array);
 			if (ack_id[0] == count_num) {
 				count_num++;
