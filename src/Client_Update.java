@@ -38,11 +38,6 @@ public class Client_Update {
 		int actual_payload_len = data_from_prev[1] + 4;
 		ByteBuffer header = ByteBuffer.allocate(12);
 		header.putInt(actual_payload_len).putInt(data_from_prev[3]).putShort((short) 1).putShort((short) 927);
-		System.out.println(actual_payload_len);
-	    System.out.println(data_from_prev[3]);
-	    System.out.println(header.getInt(0));
-	    System.out.println(header.getInt(4) + "\n");
-	    byte[] header_arr = header.array();
 		// reinitialize sendData array
 		// if payload size can be divided by 4, we don't need padding
 		int padding = padding_bytes(actual_payload_len);
