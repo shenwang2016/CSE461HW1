@@ -101,7 +101,16 @@ public class Client_Update {
 		System.out.println("while loop finish, server should send secretB");
 		byte[] receiveData_b = new byte[20];
 		DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
-		clientSocket.receive(receivePacket_b);
+		System.out.println("Receive final packet");
+		while (true) {
+			try{
+				clientSocket.receive(receivePacket_b);
+				break;
+			} catch (SocketTimeoutException e) {
+				System.out.println("continue");
+				continue;
+			}
+		}
 		System.out.println("check 2");
 		// get receivePacket_b payload
 		ByteBuffer data_b = ByteBuffer.wrap(receiveData_b);
