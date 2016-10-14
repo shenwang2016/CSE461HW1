@@ -71,7 +71,7 @@ public class Client_Update {
 		System.out.println("Step 1 done");
 	}
 	
-	public static int part1_stageD(char c, int[] data_from_prev, /*int port, */Socket socket) throws Exception {
+	public static int part1_stageD(byte/*char*/ c, int[] data_from_prev, /*int port, */Socket socket) throws Exception {
 		// InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		// client open socket
 		// Socket socket = new Socket(IPAddress, port);
@@ -118,14 +118,16 @@ public class Client_Update {
 	    	int count = 0;
 	    	while (count < data_from_prev[1]) {
 	    		ByteBuffer payload_d = ByteBuffer.allocate(4);
-	    		byte[] cha = payload_d.putChar(c).array();
-	    		for (int i = 0; i < cha.length; i++) {
+	    		// byte[] cha = payload_d.putChar(c).array();
+	    		/* for (int i = 0; i < cha.length; i++) {
 	    			if (count >= data_from_prev[1]) {
 	    				break;
 	    			}
 	    			sendData[count] = cha[i];
 	    			count++;
-	    		}
+	    		}*/
+	    		sendData[count + 12] = c;
+	    		count++;
 	    	}
 	    	// ends here
 	    	
@@ -152,10 +154,11 @@ public class Client_Update {
 			// server send packet
 			InputStream in = socket.getInputStream();
 		    DataInputStream dis = new DataInputStream(in);
-		    System.out.println(socket.isClosed());
-		    byte[] data = new byte[4];
-		    dis.readFully(data);  // EOF Exception
-		    secretD = ByteBuffer.wrap(data).getInt();
+		    System.out.println("apple"+ socket.isClosed());
+		    byte[] data = new byte[16];
+		    dis.read(data);  // EOF Exception
+		    secretD = ByteBuffer.wrap(data).getInt(12);
+		    break;
 		}
 		socket.close();
 		assert(!error);
@@ -189,7 +192,7 @@ public class Client_Update {
 	    // starts from here, is to fix the refuse to connect exception happened in part d otherwise
 		ByteBuffer from_c = ByteBuffer.wrap(data);
 		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
-		char character_from_c = from_c.getChar(24);
+		byte character_from_c = from_c.get(24);
 	    int next_secret = part1_stageD(character_from_c, result_from_c, socket);
 	    // delete it to go back
 	    int[] secrets = {from_c.getInt(20), next_secret};
