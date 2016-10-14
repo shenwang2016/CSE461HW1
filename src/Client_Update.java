@@ -10,8 +10,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
-// import org.omg.CORBA.portable.OutputStream;
-
 /**
  * 
  */
@@ -37,44 +35,19 @@ public class Client_Update {
 		assert(result_from_b.length == 2);
 		secrets[1] = result_from_a[1];
 		System.out.println("Stage B done");
-		// deleted this part to fix the refuse to connect problem, to go back, uncomment
-		/*
-		byte[] result_from_c_byte = part1_stageC(result_from_b);
-		ByteBuffer from_c = ByteBuffer.wrap(result_from_c_byte);
-		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
-		char character_from_c = from_c.getChar(24);
-		System.out.println(result_from_c[0]);
-		System.out.println(result_from_c[1]);
-		System.out.println(result_from_c[2]);
-		secrets[2] = result_from_c[2];
-		System.out.println(character_from_c);
-		*/
-		
-		// this part is new
 		int[] next_two_secrets = part1_stageC(result_from_b);
-		// this phase, up to here
-		
 		System.out.println("Stage C done");
-		// int secretD = part1_stageD(character_from_c, result_from_c, result_from_b[0]);
 		System.out.println("Stage D done");
-		
-		// next phase starts here
 		for (int i = 0; i < 2; i++) {
 			secrets[i + 2] = next_two_secrets[i];
 		}
-		// up to here
-		
-		// secrets[3] = result_from_c[3];
 		for (int i = 0; i < 4; i++) {
 			System.out.println(i + " secret: " + secrets[i]);
 		}
 		System.out.println("Step 1 done");
 	}
 	
-	public static int part1_stageD(byte/*char*/ c, int[] data_from_prev, /*int port, */Socket socket) throws Exception {
-		// InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
-		// client open socket
-		// Socket socket = new Socket(IPAddress, port);
+	public static int part1_stageD(byte c, int[] data_from_prev, Socket socket) throws Exception {
 		ByteBuffer header = ByteBuffer.allocate(12);
 		header.putInt(data_from_prev[1]).putInt(data_from_prev[2]).putShort((short) 1).putShort((short) 927);
 		java.io.OutputStream out = socket.getOutputStream(); 
@@ -99,38 +72,12 @@ public class Client_Update {
 	    		}
 	    		continue;
 	    	}
-	    	
-	    	// will cause buffer overflow
-	    	/*
-	    	ByteBuffer payload_d = ByteBuffer.allocate(data_from_prev[2]);
-	    	for (int i = 0; i < data_from_prev[1]; i++) {
-	    		payload_d.putChar(c);
-	    	}
-	    	byte[] payload_content = payload_d.array();
-	    	// add the content to sendData
-	    	for (int i = 0; i < data_from_prev[1]; i++) {
-	    		sendData[i + 12] = payload_content[i];
-	    	}
-	    	*/
-	    	// do not use
-	    	
-	    	// changed codes starts here
 	    	int count = 0;
 	    	while (count < data_from_prev[1]) {
-	    		ByteBuffer payload_d = ByteBuffer.allocate(4);
-	    		// byte[] cha = payload_d.putChar(c).array();
-	    		/* for (int i = 0; i < cha.length; i++) {
-	    			if (count >= data_from_prev[1]) {
-	    				break;
-	    			}
-	    			sendData[count] = cha[i];
-	    			count++;
-	    		}*/
+	    		// ByteBuffer payload_d = ByteBuffer.allocate(4);
 	    		sendData[count + 12] = c;
 	    		count++;
 	    	}
-	    	// ends here
-	    	
 	    	// else connection is still open, send the data
 	    	dos.write(sendData, 0, 12 + data_from_prev[1] + padding);
 	    	count_num++;
@@ -156,7 +103,7 @@ public class Client_Update {
 		    DataInputStream dis = new DataInputStream(in);
 		    System.out.println("apple"+ socket.isClosed());
 		    byte[] data = new byte[16];
-		    dis.read(data);  // EOF Exception
+		    dis.read(data);
 		    secretD = ByteBuffer.wrap(data).getInt(12);
 		    break;
 		}
@@ -188,16 +135,11 @@ public class Client_Update {
 	    DataInputStream dis = new DataInputStream(in);
         byte[] data = new byte[28];
 	    dis.readFully(data);
-	    
-	    // starts from here, is to fix the refuse to connect exception happened in part d otherwise
 		ByteBuffer from_c = ByteBuffer.wrap(data);
 		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
 		byte character_from_c = from_c.get(24);
 	    int next_secret = part1_stageD(character_from_c, result_from_c, socket);
-	    // delete it to go back
 	    int[] secrets = {from_c.getInt(20), next_secret};
-	    // socket.close();
-		// return data;
 	    return secrets;
 	}
 	
