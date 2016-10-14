@@ -31,18 +31,17 @@ public class Client_Update {
 		secrets[0] = result_from_a[3];
 		System.out.println("Stage A done");
 		int[] result_from_b = part1_stageB(result_from_a);
-		assert(result_from_b != null);
 		assert(result_from_b.length == 2);
 		secrets[1] = result_from_a[1];
 		System.out.println("Stage B done");
 		byte[] result_from_c_byte = part1_stageC(result_from_b);
 		ByteBuffer from_c = ByteBuffer.wrap(result_from_c_byte);
-		assert(result_from_c_byte != null);
 		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
 		char character_from_c = from_c.getChar(24);
 		System.out.println(result_from_c[0]);
 		System.out.println(result_from_c[1]);
 		System.out.println(result_from_c[2]);
+		secrets[2] = result_from_c[2];
 		System.out.println(character_from_c);
 		System.out.println("Stage C done");
 		
@@ -69,8 +68,7 @@ public class Client_Update {
 		// server send packet
 		InputStream in = socket.getInputStream();
 	    DataInputStream dis = new DataInputStream(in);
-        
-	    byte[] data = new byte[28];
+        byte[] data = new byte[28];
 	    dis.readFully(data);
 	    socket.close();
 		return data;
