@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  */
 
 /**
- * @author ylh96
+ * @author Shen Wang(1571169), Yilun Hua (1428927)
  *
  */
 public class Client_Update {
@@ -21,11 +21,15 @@ public class Client_Update {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
+		// array to store secrets
 		int[] secrets = new int[4];
 		int[] result_from_a = part1_stageA();
+		assert(result_from_a.length == 4);
+		secrets[0] = result_from_a[3];
 		System.out.println("Stage A done");
 		int[] result_from_b = part1_stageB(result_from_a);
+		assert(result_from_b.length == 2);
+		secrets[1] = result_from_a[1];
 		System.out.println("Stage B done");
 	}
 	
