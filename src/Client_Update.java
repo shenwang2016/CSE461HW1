@@ -29,6 +29,11 @@ public class Client_Update {
 		System.out.println("Stage B done");
 	}
 	
+	public static int[] part1_stageC() throws Exception {
+		
+		return null;
+	}
+	
 	public static int[] part1_stageB(int[] data_from_prev) throws Exception {
 		// stage b1
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
@@ -143,7 +148,6 @@ public class Client_Update {
 		int len = bf.getInt(16);
 		int udp_port = bf.getInt(20);
 		int secretA = bf.getInt(24);
-		System.out.println(secretA);
 		int[] result = {num, len, udp_port, secretA};
 		clientSocket.close();
 		return result;
