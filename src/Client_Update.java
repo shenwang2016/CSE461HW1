@@ -1,4 +1,5 @@
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
@@ -8,6 +9,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+
+// import org.omg.CORBA.portable.OutputStream;
 
 /**
  * 
@@ -34,6 +37,8 @@ public class Client_Update {
 		assert(result_from_b.length == 2);
 		secrets[1] = result_from_a[1];
 		System.out.println("Stage B done");
+		// deleted this part to fix the refuse to connect problem, to go back, uncomment
+		/*
 		byte[] result_from_c_byte = part1_stageC(result_from_b);
 		ByteBuffer from_c = ByteBuffer.wrap(result_from_c_byte);
 		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
@@ -43,11 +48,122 @@ public class Client_Update {
 		System.out.println(result_from_c[2]);
 		secrets[2] = result_from_c[2];
 		System.out.println(character_from_c);
-		System.out.println("Stage C done");
+		*/
 		
+		// this part is new
+		int[] next_two_secrets = part1_stageC(result_from_b);
+		// this phase, up to here
+		
+		System.out.println("Stage C done");
+		// int secretD = part1_stageD(character_from_c, result_from_c, result_from_b[0]);
+		System.out.println("Stage D done");
+		
+		// next phase starts here
+		for (int i = 0; i < 2; i++) {
+			secrets[i + 2] = next_two_secrets[i];
+		}
+		// up to here
+		
+		// secrets[3] = result_from_c[3];
+		for (int i = 0; i < 4; i++) {
+			System.out.println(i + " secret: " + secrets[i]);
+		}
+		System.out.println("Step 1 done");
 	}
 	
-	public static byte[] part1_stageC(int[] data_from_prev) throws Exception {
+	public static int part1_stageD(char c, int[] data_from_prev, /*int port, */Socket socket) throws Exception {
+		// InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
+		// client open socket
+		// Socket socket = new Socket(IPAddress, port);
+		ByteBuffer header = ByteBuffer.allocate(12);
+		header.putInt(data_from_prev[1]).putInt(data_from_prev[2]).putShort((short) 1).putShort((short) 927);
+		java.io.OutputStream out = socket.getOutputStream(); 
+	    DataOutputStream dos = new DataOutputStream(out);
+	    byte[] head = header.array();
+	    int padding = padding_bytes(data_from_prev[2]);
+	    byte[] sendData = new byte[12 + data_from_prev[2] + padding];
+	    // store header
+	    for (int i = 0; i < 12; i++) {
+	    	sendData[i] = head[i];
+	    }
+	    boolean error = false;
+	    int count_num = 0;
+	    int count_fail = 0;
+	    int max_fail = 100;
+	    while (true) {
+	    	if (socket.isOutputShutdown()) {
+	    		count_fail++;
+	    		if (count_fail == max_fail) {
+	    			error = true;
+	    			break;
+	    		}
+	    		continue;
+	    	}
+	    	
+	    	// will cause buffer overflow
+	    	/*
+	    	ByteBuffer payload_d = ByteBuffer.allocate(data_from_prev[2]);
+	    	for (int i = 0; i < data_from_prev[2]; i++) {
+	    		payload_d.putChar(c);
+	    	}
+	    	byte[] payload_content = payload_d.array();
+	    	// add the content to sendData
+	    	for (int i = 0; i < data_from_prev[2]; i++) {
+	    		sendData[i + 12] = payload_content[i];
+	    	}
+	    	*/
+	    	// do not use
+	    	
+	    	// changed codes starts here
+	    	int count = 0;
+	    	while (count < data_from_prev[2]) {
+	    		ByteBuffer payload_d = ByteBuffer.allocate(4);
+	    		byte[] cha = payload_d.putChar(c).array();
+	    		for (int i = 0; i < cha.length; i++) {
+	    			if (count >= data_from_prev[2]) {
+	    				break;
+	    			}
+	    			sendData[count] = cha[i];
+	    			count++;
+	    		}
+	    	}
+	    	// ends here
+	    	
+	    	// else connection is still open, send the data
+	    	dos.write(sendData, 0, 12 + data_from_prev[2] + padding);
+	    	count_num++;
+	    	if (count_num == data_from_prev[0]) {
+	    		break;
+	    	}
+	    }
+	    // get the data the server sends back
+	    int error_count = 0;
+		int max_error = 100;
+		int secretD = 0;
+		while(true) {
+			if(socket.isInputShutdown()) {
+				error_count++;
+	    		if (error_count == max_error) {
+	    			error = true;
+	    			break;
+	    		}
+	    		continue;
+			}
+			// server send packet
+			InputStream in = socket.getInputStream();
+		    DataInputStream dis = new DataInputStream(in);
+		    byte[] data = new byte[4];
+		    dis.readFully(data);  // socket execption here, reasons unknown, yet causes vary
+		    					  // stackoverflow says it maybe caused by network connection
+		    					  // thus, i will try again later. But otherwise HURRAY!!!
+		    secretD = ByteBuffer.wrap(data).getInt();
+		}
+		socket.close();
+		assert(!error);
+		return secretD;
+	}
+	
+	public static int[]/*byte[] */part1_stageC(int[] data_from_prev) throws Exception {
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		// client open socket
 		Socket socket = new Socket(IPAddress, data_from_prev[0]);
@@ -56,7 +172,7 @@ public class Client_Update {
 		while(true) {
 			if(socket.isConnected()) {
 				break;
-			} else{
+			} else {
 				error_count++;
 				if(error_count == max_error) {
 					socket.close();
@@ -70,8 +186,17 @@ public class Client_Update {
 	    DataInputStream dis = new DataInputStream(in);
         byte[] data = new byte[28];
 	    dis.readFully(data);
-	    socket.close();
-		return data;
+	    
+	    // starts from here, is to fix the refuse to connect exception happened in part d otherwise
+		ByteBuffer from_c = ByteBuffer.wrap(data);
+		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
+		char character_from_c = from_c.getChar(24);
+	    int next_secret = part1_stageD(character_from_c, result_from_c, socket);
+	    // delete it to go back
+	    int[] secrets = {from_c.getInt(20), next_secret};
+	    // socket.close();
+		// return data;
+	    return secrets;
 	}
 	
 	public static int[] part1_stageB(int[] data_from_prev) throws Exception {
