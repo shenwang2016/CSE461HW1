@@ -80,8 +80,8 @@ public class Client_Update {
 		java.io.OutputStream out = socket.getOutputStream(); 
 	    DataOutputStream dos = new DataOutputStream(out);
 	    byte[] head = header.array();
-	    int padding = padding_bytes(data_from_prev[2]);
-	    byte[] sendData = new byte[12 + data_from_prev[2] + padding];
+	    int padding = padding_bytes(data_from_prev[1]);
+	    byte[] sendData = new byte[12 + data_from_prev[1] + padding];
 	    // store header
 	    for (int i = 0; i < 12; i++) {
 	    	sendData[i] = head[i];
@@ -103,12 +103,12 @@ public class Client_Update {
 	    	// will cause buffer overflow
 	    	/*
 	    	ByteBuffer payload_d = ByteBuffer.allocate(data_from_prev[2]);
-	    	for (int i = 0; i < data_from_prev[2]; i++) {
+	    	for (int i = 0; i < data_from_prev[1]; i++) {
 	    		payload_d.putChar(c);
 	    	}
 	    	byte[] payload_content = payload_d.array();
 	    	// add the content to sendData
-	    	for (int i = 0; i < data_from_prev[2]; i++) {
+	    	for (int i = 0; i < data_from_prev[1]; i++) {
 	    		sendData[i + 12] = payload_content[i];
 	    	}
 	    	*/
@@ -116,11 +116,11 @@ public class Client_Update {
 	    	
 	    	// changed codes starts here
 	    	int count = 0;
-	    	while (count < data_from_prev[2]) {
+	    	while (count < data_from_prev[1]) {
 	    		ByteBuffer payload_d = ByteBuffer.allocate(4);
 	    		byte[] cha = payload_d.putChar(c).array();
 	    		for (int i = 0; i < cha.length; i++) {
-	    			if (count >= data_from_prev[2]) {
+	    			if (count >= data_from_prev[1]) {
 	    				break;
 	    			}
 	    			sendData[count] = cha[i];
@@ -130,7 +130,7 @@ public class Client_Update {
 	    	// ends here
 	    	
 	    	// else connection is still open, send the data
-	    	dos.write(sendData, 0, 12 + data_from_prev[2] + padding);
+	    	dos.write(sendData, 0, 12 + data_from_prev[1] + padding);
 	    	count_num++;
 	    	if (count_num == data_from_prev[0]) {
 	    		break;
@@ -152,10 +152,9 @@ public class Client_Update {
 			// server send packet
 			InputStream in = socket.getInputStream();
 		    DataInputStream dis = new DataInputStream(in);
+		    System.out.println(socket.isClosed());
 		    byte[] data = new byte[4];
-		    dis.readFully(data);  // socket execption here, reasons unknown, yet causes vary
-		    					  // stackoverflow says it maybe caused by network connection
-		    					  // thus, i will try again later. But otherwise HURRAY!!!
+		    dis.readFully(data);  // EOF Exception
 		    secretD = ByteBuffer.wrap(data).getInt();
 		}
 		socket.close();
