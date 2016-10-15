@@ -57,7 +57,7 @@ public class Server {
 		}
 		
 		
-		public void stageB(int[] from_stage_a) throws Exception {
+		public int stageB(int[] from_stage_a) throws Exception {
 			ServerSocket new_server;
 			int send_num = from_stage_a[0];
 			int len = from_stage_a[1];
@@ -69,6 +69,80 @@ public class Server {
 				 System.exit(-1);
 			 }
 			 int counter = 0;
+			 // get data from client
+			 InputStream in;
+			 DataInputStream dis = null;
+			 try{
+			    in = clientSocket.getInputStream();
+			    dis = new DataInputStream(in);
+			 } catch (IOException e) {
+			    System.out.println("in or out failed");
+			    System.exit(-1);
+			 }
+			 
+			 // send data to client
+			 OutputStream out;
+			 DataOutputStream dos = null;
+			 try{
+		    	out = clientSocket.getOutputStream();
+		    	dos = new DataOutputStream(out);
+		     }catch (IOException e) {
+		    	System.out.println("Read failed");
+		    	System.exit(-1);
+		     }
+			 
+			 int in_data_size = 12 + len + 4 + padding_bytes(len + 4);
+			 while (counter != send_num) {
+			    byte[] data = new byte[in_data_size];
+			    dis.read(data);
+			    ByteBuffer in_data = ByteBuffer.wrap(data);
+			    // verify header info
+			    if ((in_data.getInt(0) - 4 != len) || verify_header(secrets[0], in_data)) {
+			    	System.out.println("header format problem");
+			    	System.exit(-1);
+			    }
+			    // grab payload data
+			    // first check packet_id;
+			    int packet_id = in_data.getInt(12);
+			    for(int  i = 0; i < len; i++) {
+			    	byte temp = in_data.get(i + 16);
+			    	if (temp != (byte) 0) {
+			    	   System.out.println("payload content is not correct!");
+			    	   continue;
+			    	}
+			     }
+				 byte[] sendData = new byte[16];
+				 byte[] head = generate_header(secrets[0], 4);
+				 for (int i = 0; i < 12; i++) {
+			    		sendData[i] = head[i];
+			     }
+				 ByteBuffer content = ByteBuffer.allocate(4);
+                 content.putInt(packet_id);
+                 byte[] content_byte = content.array();
+ 		    	 for (int i = 0; i < content_byte.length; i++) {
+ 		    		sendData[i + 12] = content_byte[i];
+ 		    	 }
+ 		    	 dos.write(sendData, 0, 16);
+ 		     }
+			 byte[] sendData = new byte[20];
+			 byte[] head = generate_header(secrets[0], 8);
+			 for (int i = 0; i < 12; i++) {
+		    		sendData[i] = head[i];
+		     }
+			 ByteBuffer content = ByteBuffer.allocate(8);
+			 Random rand = new Random();
+		    	int tcp_port = rand.nextInt(49000) + 1024;
+		    while (port_num - 12235 == 0) {
+		    	 tcp_port = rand.nextInt(49000) + 1024;
+		    }
+		    content.putInt(tcp_port).putInt(secrets[1]);
+		    byte[] content_byte = content.array();
+		    for (int i = 0; i < content_byte.length; i++) {
+	    		sendData[i + 12] = content_byte[i];
+	    	}
+	    	dos.write(sendData, 0, 20);
+	    	return tcp_port;
+			 
 			
 		}
 		
@@ -121,7 +195,7 @@ public class Server {
 		    		System.out.println("Read failed");
 		    		System.exit(-1);
 		    	}
-		    	byte[] head = generate_header(secrets[0], 16);
+		    	byte[] head = generate_header(0, 16);
 		    	for (int i = 0; i < 12; i++) {
 		    		sendData[i] = head[i];
 		    	}
@@ -170,6 +244,14 @@ public class Server {
 			secrets[1] = rand.nextInt(student_id);
 			secrets[2] = rand.nextInt(student_id);
 			secrets[3] = rand.nextInt(student_id);
+		}
+		
+		public int padding_bytes(int length) {
+			if (length % 4 == 0) {
+				return 0;
+			} else {
+				return 4 - length % 4;
+			}
 		}
 		
 	}
