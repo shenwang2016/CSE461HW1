@@ -147,14 +147,6 @@ public class Client_Update {
 		// stage b1
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		DatagramSocket clientSocket = new DatagramSocket();
-		clientSocket.connect(IPAddress, data_from_prev[2]);
-		if (clientSocket.isConnected()) {
-			System.out.println("Connected");
-		} else {
-			System.out.println("Disconnected");
-			clientSocket.close();
-			return null;
-		}
 		// build header
 		int actual_payload_len = data_from_prev[1] + 4;
 		ByteBuffer header = ByteBuffer.allocate(12);
@@ -186,15 +178,22 @@ public class Client_Update {
 			// prepare packet
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData, sendData.length, IPAddress, data_from_prev[2]);
 			clientSocket.connect(IPAddress, data_from_prev[2]);
+			if (clientSocket.isConnected()) {
+				System.out.println("Connected");
+			} else {
+				System.out.println("Disconnected");
+				clientSocket.close();
+				return null;
+			}
 			DatagramPacket receivePacket_b;
 			try{ 
+				System.out.println("entering try catch");
 				// set retransmit interval
 				clientSocket.setSoTimeout(500);
 				clientSocket.send(sendPacket_b);
 				System.out.println("sent");
 				byte[] receiveData_b = new byte[16];
 				receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
-				System.out.println("entering try catch");
 				System.out.println("socket connect status: " + clientSocket.isConnected());
 				System.out.println("start receive");
 				clientSocket.receive(receivePacket_b);
@@ -235,7 +234,6 @@ public class Client_Update {
 				continue;
 			}
 		}
-		System.out.println("check 2");
 		// get receivePacket_b payload
 		ByteBuffer data_b = ByteBuffer.wrap(receiveData_b);
 		int tcp_port = data_b.getInt(12);
