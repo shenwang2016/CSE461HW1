@@ -56,14 +56,19 @@ public class Server {
 			
 		}
 		
-		public void stageB(int port_num) throws Exception {
+		
+		public void stageB(int[] from_stage_a) throws Exception {
 			ServerSocket new_server;
+			int send_num = from_stage_a[0];
+			int len = from_stage_a[1];
+			int port_num = from_stage_a[2];
 			 try{
 				 new_server = new ServerSocket(port_num);
 			 } catch (IOException e) {
 				 System.out.println("Could not listen on port " + port_num);
 				 System.exit(-1);
 			 }
+			 int counter = 0;
 			
 		}
 		
@@ -126,13 +131,16 @@ public class Server {
 		    	while (port_num - 12235 == 0) {
 		    	    port_num = rand.nextInt(49000) + 1024;
 		    	}
-		    	content.putInt(rand.nextInt(99) + 1).putInt(rand.nextInt(499) + 1).putInt(port_num).putInt(secrets[0]);
+		    	int num_send = rand.nextInt(99) + 1;
+		    	int len = rand.nextInt(499) + 1;
+		    	content.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
 		    	byte[] content_byte = content.array();
 		    	for (int i = 0; i < content_byte.length; i++) {
 		    		sendData[i + 12] = content_byte[i];
 		    	}
 		    	dos.write(sendData, 0, 28);
-		    	return port_num;
+		    	int[] from_stage_a = {num_send, len, port_num};
+		    	return from_stage_a;
 		    }
 		}
 		
