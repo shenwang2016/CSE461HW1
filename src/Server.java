@@ -29,7 +29,7 @@ public class Server {
 		
 		private Socket clientSocket;
 		private int student_id;
-		private int[] secrets = new int[3];
+		private int[] secrets = new int[4];
 		
 		
 		public Client_handler(Socket clientSocket) {
@@ -131,6 +131,7 @@ public class Server {
 		    }
 		}
 		
+		// we only need to verify psecret, step num, and student ID last 3 digits
 		public boolean verify_header(int psecret, ByteBuffer head_buf) {
 			if (psecret != head_buf.getInt(4)) {
 				return false;
@@ -155,6 +156,7 @@ public class Server {
 			secrets[0] = rand.nextInt(student_id);
 			secrets[1] = rand.nextInt(student_id);
 			secrets[2] = rand.nextInt(student_id);
+			secrets[3] = rand.nextInt(student_id);
 		}
 		
 	}
