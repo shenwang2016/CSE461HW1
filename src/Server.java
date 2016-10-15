@@ -89,7 +89,9 @@ public class Server {
 		    }
 		    String secret_phase = "hello world\0";
 		    String incoming_phase = "";
-		    for (int i = 0; i < secret_phase.getBytes().length; i++) {
+		    int phase_byte_length = secret_phase.getBytes().length;
+		    assert(phase_byte_length == 12);
+		    for (int i = 0; i < phase_byte_length; i++) {
 		    	byte c = 0;
 		    	try{
 		    		c = in_data.get(i + 12);
