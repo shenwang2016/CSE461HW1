@@ -148,6 +148,13 @@ public class Client_Update {
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		DatagramSocket clientSocket = new DatagramSocket();
 		clientSocket.connect(IPAddress, data_from_prev[2]);
+		if (clientSocket.isConnected()) {
+			System.out.println("Connected");
+		} else {
+			System.out.println("Disconnected");
+			clientSocket.close();
+			return null;
+		}
 		// build header
 		int actual_payload_len = data_from_prev[1] + 4;
 		ByteBuffer header = ByteBuffer.allocate(12);
