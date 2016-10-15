@@ -43,7 +43,6 @@ public class Server {
 			try {
 				new_udp_port = stageA();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -69,6 +68,7 @@ public class Server {
 		}
 		
 		public int stageA() throws Exception {
+			// get input from client
 			InputStream in;
 		    DataInputStream dis = null;
 		    try{
@@ -78,7 +78,7 @@ public class Server {
 		    	System.out.println("in or out failed");
 		    	System.exit(-1);
 		    }
-		    byte[] data = new byte[30];
+		    byte[] data = new byte[24];
 		    dis.read(data);
 		    ByteBuffer in_data = ByteBuffer.wrap(data);
 		    student_id = in_data.getShort(10);
