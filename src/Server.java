@@ -29,7 +29,7 @@ public class Server {
 		
 		private Socket clientSocket;
 		private int student_id;
-		private int[] secrets;
+		private int[] secrets = new int[3];
 		
 		
 		public Client_handler(Socket clientSocket) {
@@ -150,12 +150,10 @@ public class Server {
 		}
 		
 		public void generate_secret() {
-			int[] secrets = new int[3];
 			Random rand = new Random();
 			secrets[0] = rand.nextInt(student_id);
 			secrets[1] = rand.nextInt(student_id);
 			secrets[2] = rand.nextInt(student_id);
-			this.secrets = secrets;
 		}
 		
 	}
