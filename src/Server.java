@@ -1,11 +1,9 @@
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Random;
@@ -41,6 +39,13 @@ public class Server {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			int new_udp_port = 0;
+			try {
+				new_udp_port = stageA();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		}
 		
@@ -52,11 +57,18 @@ public class Server {
 			
 		}
 		
-		public void stageB() {
+		public void stageB(int port_num) throws Exception {
+			ServerSocket new_server;
+			 try{
+				 new_server = new ServerSocket(port_num);
+			 } catch (IOException e) {
+				 System.out.println("Could not listen on port " + port_num);
+				 System.exit(-1);
+			 }
 			
 		}
 		
-		public void stageA() throws Exception {
+		public int stageA() throws Exception {
 			InputStream in;
 		    DataInputStream dis = null;
 		    try{
@@ -76,7 +88,7 @@ public class Server {
 		    }
 		    String secret_phase = "hello world\0";
 		    String incoming_phase = "";
-		    for (int i = 0; i < secret_phase.length(); i++) {
+		    for (int i = 0; i < secret_phase.getBytes().length; i++) {
 		    	byte c = 0;
 		    	try{
 		    		c = in_data.get(i + 12);
@@ -107,12 +119,14 @@ public class Server {
 		    	}
 		    	ByteBuffer content = ByteBuffer.allocate(32);
 		    	Random rand = new Random();
-		    	content.putInt(rand.nextInt(99) + 1).putInt(rand.nextInt(499) + 1).putInt(rand.nextInt(99000) + 1000).putInt(secrets[0]);
+		    	int port_num = rand.nextInt(99000) + 1000;
+		    	content.putInt(rand.nextInt(99) + 1).putInt(rand.nextInt(499) + 1).putInt(port_num).putInt(secrets[0]);
 		    	byte[] content_byte = content.array();
 		    	for (int i = 0; i < content_byte.length; i++) {
 		    		sendData[i + 12] = content_byte[i];
 		    	}
 		    	dos.write(sendData, 0, 48);
+		    	return port_num;
 		    }
 		}
 		
@@ -126,7 +140,7 @@ public class Server {
 			if (head_buf.getShort(10) != (short) student_id) {
 				return false;
 			}
-			return false;
+			return true;
 		}
 		
 		public byte[] generate_header(int secret, int content_len) {
