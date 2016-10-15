@@ -82,6 +82,7 @@ public class Server {
 		    dis.read(data);
 		    ByteBuffer in_data = ByteBuffer.wrap(data);
 		    student_id = in_data.getShort(10);
+		    //verify whether the secret is 0
 		    if (verify_header(0, in_data)) {
 		    	System.out.println("header format problem");
 		    	System.exit(-1);
