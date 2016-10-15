@@ -87,10 +87,10 @@ public class Server {
 		    	System.out.println("header format problem");
 		    	System.exit(-1);
 		    }
-		    String secret_phase = "hello world\0";
-		    String incoming_phase = "";
+		    String secret_phase = "hello world\0"; 
 		    int phase_byte_length = secret_phase.getBytes().length;
 		    assert(phase_byte_length == 12);
+		    String incoming_phase = "";
 		    for (int i = 0; i < phase_byte_length; i++) {
 		    	byte c = 0;
 		    	try{
@@ -107,7 +107,7 @@ public class Server {
 		    }
 		    OutputStream out;
 		    DataOutputStream dos = null;
-		    byte[] sendData = new byte[48];
+		    byte[] sendData = new byte[28];
 		    while(true){
 		    	try{
 		    		out = clientSocket.getOutputStream();
@@ -116,19 +116,22 @@ public class Server {
 		    		System.out.println("Read failed");
 		    		System.exit(-1);
 		    	}
-		    	byte[] head = generate_header(secrets[0], 32);
+		    	byte[] head = generate_header(secrets[0], 16);
 		    	for (int i = 0; i < 12; i++) {
 		    		sendData[i] = head[i];
 		    	}
-		    	ByteBuffer content = ByteBuffer.allocate(32);
+		    	ByteBuffer content = ByteBuffer.allocate(16);
 		    	Random rand = new Random();
-		    	int port_num = rand.nextInt(99000) + 1000;
+		    	int port_num = rand.nextInt(49000) + 1024;
+		    	while (port_num - 12235 == 0) {
+		    	    port_num = rand.nextInt(49000) + 1024;
+		    	}
 		    	content.putInt(rand.nextInt(99) + 1).putInt(rand.nextInt(499) + 1).putInt(port_num).putInt(secrets[0]);
 		    	byte[] content_byte = content.array();
 		    	for (int i = 0; i < content_byte.length; i++) {
 		    		sendData[i + 12] = content_byte[i];
 		    	}
-		    	dos.write(sendData, 0, 48);
+		    	dos.write(sendData, 0, 28);
 		    	return port_num;
 		    }
 		}
