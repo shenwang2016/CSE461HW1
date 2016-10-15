@@ -72,7 +72,7 @@ public class Server {
 			
 		}
 		
-		public int stageA() throws Exception {
+		public int[] stageA() throws Exception {
 			// get input from client
 			InputStream in;
 		    DataInputStream dis = null;
