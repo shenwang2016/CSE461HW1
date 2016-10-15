@@ -90,15 +90,29 @@ public class Server {
 		    	System.out.println("wrong message");
 		    	System.exit(-1);
 		    }
-		    OutputStream out = clientSocket.getOutputStream(); 
-		    DataOutputStream dos = new DataOutputStream(out);
+		    OutputStream out;
+		    DataOutputStream dos = null;
+		    byte[] sendData = new byte[48];
 		    while(true){
 		    	try{
-		    		
+		    		out = clientSocket.getOutputStream();
+		    		dos = new DataOutputStream(out);
 		    	}catch (IOException e) {
 		    		System.out.println("Read failed");
 		    		System.exit(-1);
 		    	}
+		    	byte[] head = generate_header(secrets[0], 32);
+		    	for (int i = 0; i < 12; i++) {
+		    		sendData[i] = head[i];
+		    	}
+		    	ByteBuffer content = ByteBuffer.allocate(32);
+		    	Random rand = new Random();
+		    	content.putInt(rand.nextInt(99) + 1).putInt(rand.nextInt(499) + 1).putInt(rand.nextInt(99000) + 1000).putInt(secrets[0]);
+		    	byte[] content_byte = content.array();
+		    	for (int i = 0; i < content_byte.length; i++) {
+		    		sendData[i + 12] = content_byte[i];
+		    	}
+		    	dos.write(sendData, 0, 48);
 		    }
 		}
 		
