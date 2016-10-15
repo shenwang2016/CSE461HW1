@@ -112,7 +112,7 @@ public class Client_Update {
 		return secretD;
 	}
 	
-	public static int[]/*byte[] */part1_stageC(int[] data_from_prev) throws Exception {
+	public static int[] part1_stageC(int[] data_from_prev) throws Exception {
 		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		// client open socket
 		Socket socket = new Socket(IPAddress, data_from_prev[0]);
@@ -179,16 +179,17 @@ public class Client_Update {
 			// prepare packet
 			DatagramPacket sendPacket_b = new DatagramPacket(sendData, sendData.length, IPAddress, data_from_prev[2]);
 			clientSocket.connect(IPAddress, data_from_prev[2]);
-			clientSocket.send(sendPacket_b);
-			System.out.println("sent");
-			byte[] receiveData_b = new byte[16];
-			DatagramPacket receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
-			System.out.println("entering try catch");
-			System.out.println("socket connect status: " + clientSocket.isConnected());
+			DatagramPacket receivePacket_b;
 			try{ 
-				System.out.println("start receive");
 				// set retransmit interval
 				clientSocket.setSoTimeout(500);
+				clientSocket.send(sendPacket_b);
+				System.out.println("sent");
+				byte[] receiveData_b = new byte[16];
+				receivePacket_b = new DatagramPacket(receiveData_b, receiveData_b.length);
+				System.out.println("entering try catch");
+				System.out.println("socket connect status: " + clientSocket.isConnected());
+				System.out.println("start receive");
 				clientSocket.receive(receivePacket_b);
 				System.out.println("receive end");
 			} catch (SocketTimeoutException e) {
