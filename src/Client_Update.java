@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -18,39 +19,67 @@ import java.nio.ByteBuffer;
  * @author Shen Wang(1571169), Yilun Hua (1428927)
  *
  */
-public class Client_Update {
+public class Client_Update{
+	
 
 	/**
 	 * @param args
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
+		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		// array to store secrets
 		int[] secrets = new int[4];
-		int[] result_from_a = part1_stageA();
+		int[] result_from_a = part1_stageA(IPAddress);
+		if(result_from_a == null) {
+			System.out.println("Error while connecting for stageA");
+		}
 		assert(result_from_a.length == 4);
 		secrets[0] = result_from_a[3];
 		System.out.println("Stage A done");
-		int[] result_from_b = part1_stageB(result_from_a);
+		int[] result_from_b = part1_stageB(result_from_a, IPAddress);
+		if(result_from_b == null) {
+			System.out.println("Error while connecting for stageB");
+		}
 		assert(result_from_b.length == 2);
 		secrets[1] = result_from_a[1];
 		System.out.println("Stage B done");
-		int[] next_two_secrets = part1_stageC(result_from_b);
-		System.out.println("Stage C done");
-		System.out.println("Stage D done");
-		for (int i = 0; i < 2; i++) {
-			secrets[i + 2] = next_two_secrets[i];
+		// declare a socket variable used in c and d
+		Socket socket = new Socket(IPAddress, result_from_b[0]);
+		int error_count = 0;
+		int max_error = 100;
+		while(true) {
+			if(socket.isConnected()) {
+				break;
+			} else {
+				error_count++;
+				if(error_count == max_error) {
+					socket.close();
+					System.out.println("Failed");
+				}
+			}
 		}
+		ByteBuffer from_c = part1_stageC(result_from_b, IPAddress, socket);
+		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
+		byte character_from_c = from_c.get(24);
+		assert(result_from_c.length == 3);
+		secrets[2] = result_from_c[2];
+		System.out.println("Stage C done");
+		int secretD = part1_stageD(result_from_c, socket, character_from_c);
+		secrets[3] = secretD;
+		System.out.println("Stage D done");
 		for (int i = 0; i < 4; i++) {
 			System.out.println(i + " secret: " + secrets[i]);
 		}
 		System.out.println("Step 1 done");
 	}
 	
-	public static int part1_stageD(byte c, int[] data_from_prev, Socket socket) throws Exception {
+	public static int part1_stageD(int[] data_from_prev, Socket socket, byte c) throws Exception {
+		System.out.println(socket.isConnected());
+		System.out.println(c);
 		ByteBuffer header = ByteBuffer.allocate(12);
 		header.putInt(data_from_prev[1]).putInt(data_from_prev[2]).putShort((short) 1).putShort((short) 927);
-		java.io.OutputStream out = socket.getOutputStream(); 
+		OutputStream out = socket.getOutputStream(); 
 	    DataOutputStream dos = new DataOutputStream(out);
 	    byte[] head = header.array();
 	    int padding = padding_bytes(data_from_prev[1]);
@@ -59,7 +88,14 @@ public class Client_Update {
 	    for (int i = 0; i < 12; i++) {
 	    	sendData[i] = head[i];
 	    }
+	    // stuff with content of Cs
+    	int count = 0;
+    	while (count < data_from_prev[1]) {
+    		sendData[count + 12] = c;
+    		count++;
+    	}
 	    boolean error = false;
+	    // counter to count packet
 	    int count_num = 0;
 	    int count_fail = 0;
 	    int max_fail = 100;
@@ -72,27 +108,19 @@ public class Client_Update {
 	    		}
 	    		continue;
 	    	}
-	    	int count = 0;
-	    	while (count < data_from_prev[1]) {
-	    		// ByteBuffer payload_d = ByteBuffer.allocate(4);
-	    		sendData[count + 12] = c;
-	    		count++;
-	    	}
-	    	// else connection is still open, send the data
+	    	//send the data
 	    	dos.write(sendData, 0, 12 + data_from_prev[1] + padding);
 	    	count_num++;
-	    	if (count_num == data_from_prev[0]) {
-	    		break;
-	    	}
+	    	if (count_num == data_from_prev[0]) break;
 	    }
 	    // get the data the server sends back
-	    int error_count = 0;
-		int max_error = 100;
+	    count_fail = 0;
 		int secretD = 0;
+		// wait server send data back
 		while(true) {
 			if(socket.isInputShutdown()) {
-				error_count++;
-	    		if (error_count == max_error) {
+				count_fail++;
+	    		if (count_fail == max_fail) {
 	    			error = true;
 	    			break;
 	    		}
@@ -101,7 +129,7 @@ public class Client_Update {
 			// server send packet
 			InputStream in = socket.getInputStream();
 		    DataInputStream dis = new DataInputStream(in);
-		    System.out.println("apple"+ socket.isClosed());
+		    System.out.println("socket status in stageD: "+ socket.isClosed());
 		    byte[] data = new byte[16];
 		    dis.read(data);
 		    secretD = ByteBuffer.wrap(data).getInt(12);
@@ -112,40 +140,18 @@ public class Client_Update {
 		return secretD;
 	}
 	
-	public static int[] part1_stageC(int[] data_from_prev) throws Exception {
-		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
-		// client open socket
-		Socket socket = new Socket(IPAddress, data_from_prev[0]);
-		int error_count = 0;
-		int max_error = 100;
-		while(true) {
-			if(socket.isConnected()) {
-				break;
-			} else {
-				error_count++;
-				if(error_count == max_error) {
-					socket.close();
-					System.out.println("Failed");
-					return null;
-				}
-			}
-		}
+	public static ByteBuffer part1_stageC(int[] data_from_prev, InetAddress IPAddress, Socket socket) throws Exception {
 		// server send packet
 		InputStream in = socket.getInputStream();
 	    DataInputStream dis = new DataInputStream(in);
         byte[] data = new byte[28];
 	    dis.readFully(data);
 		ByteBuffer from_c = ByteBuffer.wrap(data);
-		int[] result_from_c = {from_c.getInt(12), from_c.getInt(16), from_c.getInt(20)}; 
-		byte character_from_c = from_c.get(24);
-	    int next_secret = part1_stageD(character_from_c, result_from_c, socket);
-	    int[] secrets = {from_c.getInt(20), next_secret};
-	    return secrets;
+		return from_c;
 	}
 	
-	public static int[] part1_stageB(int[] data_from_prev) throws Exception {
+	public static int[] part1_stageB(int[] data_from_prev, InetAddress IPAddress) throws Exception {
 		// stage b1
-		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		DatagramSocket clientSocket = new DatagramSocket();
 		// build header
 		int actual_payload_len = data_from_prev[1] + 4;
@@ -245,8 +251,7 @@ public class Client_Update {
 		return payload_b;
 	}
 	
-	public static int[] part1_stageA() throws UnknownHostException, IOException {
-		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
+	public static int[] part1_stageA(InetAddress IPAddress) throws UnknownHostException, IOException {
 		DatagramSocket clientSocket = new DatagramSocket();
 		clientSocket.connect(IPAddress, 12235);
 		if (clientSocket.isConnected()) {
