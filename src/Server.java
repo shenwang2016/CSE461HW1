@@ -23,7 +23,7 @@ public class Server {
 		ServerSocket serverSocket = null;
 		try {
 			serverSocket = new ServerSocket(12345);
-			serverSocket.setSoTimeout(500);
+			serverSocket.setSoTimeout(2000);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
