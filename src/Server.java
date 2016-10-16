@@ -26,13 +26,12 @@ public class Server {
 		while(true){
 			byte[] receiveData = new byte[24];
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			serverSocket.receive(receivePacket);
 			new Thread(
 					new Client_handler(
 							receivePacket, serverSocket)
 						).start(); 
 		  	}
-		
-
 	}
 
 	static class Client_handler implements Runnable {
@@ -269,8 +268,6 @@ public class Server {
 		public int[] stageA() throws Exception {
 			// get input from client
 			byte[] sendData = new byte[28];
-			
-			serverSocket.receive(receivePacket);
 			InetAddress IPAddress = receivePacket.getAddress();
 			int port = receivePacket.getPort();
 			// extract data from server packet
