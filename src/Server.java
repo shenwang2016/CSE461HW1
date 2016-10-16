@@ -23,7 +23,6 @@ public class Server {
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
 		// ServerSocket serverSocket = new ServerSocket(12345);
-		DatagramSocket serverSocket = new DatagramSocket(12345);
 		// try {
 		// serverSocket = new ServerSocket(12345);
 		// serverSocket.setSoTimeout(2000);
@@ -39,16 +38,11 @@ public class Server {
 		 * RuntimeException( "Error accepting client connection", e); }
 		 * System.out.println(clientSocket == null); Client_handler ch = new
 		 * Client_handler(clientSocket); Thread t = new Thread(ch); t.start(); }
-		 */
-		byte[] receiveData = new byte[1024];
-		byte[] sendData = new byte[1024];
-		while (true) {
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			serverSocket.receive(receivePacket);
-			Client_handler ch = new Client_handler(clientSocket);
-			Thread t = new Thread(ch);
-			t.start();
-		}
+		Client_handler ch = new Client_handler(clientSocket);
+		Thread t = new Thread(ch);
+		t.start();
+		}*/
+		Client_handler.stageA();
 
 	}
 
@@ -332,7 +326,7 @@ public class Server {
 			// extract data from server packet
 			byte[] fromClient = receivePacket.getData();
 			ByteBuffer bf = ByteBuffer.wrap(fromClient);
-			student_id = bf.getShort(10);
+			int student_id = bf.getShort(10);
 			// verify whether the secret is 0
 			if (verify_header(0, bf)) {
 				System.out.println("header format problem");
@@ -378,6 +372,7 @@ public class Server {
 			}
 
 			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+			serverSocket.send(sendPacket);
 			int[] from_stage_a = { num_send, len, port_num };
 			serverSocket.close();
 			return from_stage_a;
