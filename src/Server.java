@@ -57,7 +57,7 @@ public class Server {
 		public void stageD(int[] from_stage_c, ServerSocket new_server) throws IOException {
 			int num2 = from_stage_c[0];
 			int len2 = from_stage_c[1];
-			byte c =  (byte)from_stage_c[2];
+			byte c = (byte) from_stage_c[2];
 			// get input from client
 			InputStream in;
 			DataInputStream dis = null;
@@ -69,24 +69,47 @@ public class Server {
 				System.exit(-1);
 			}
 			int counter = 0;
-			byte[] data = new byte[12 + len2];
-			dis.read(data);
-			ByteBuffer in_data = ByteBuffer.wrap(data);
-			// verify whether the secret is 0
-			if (verify_header(secrets[2], in_data)) {
-				System.out.println("header format problem");
-				System.exit(-1);
-			}
-			for(int i = 0; i < len2; i++) {
-				byte temp = in_data.get();
-				if(temp != c) {
-					System.out.println("wrong message");
+			while (counter != num2) {
+				byte[] data = new byte[12 + len2];
+				dis.read(data);
+				ByteBuffer in_data = ByteBuffer.wrap(data);
+				// verify whether the secret is 0
+				if (verify_header(secrets[2], in_data)) {
+					System.out.println("header format problem");
 					System.exit(-1);
 				}
-		     }
-			
-
-		}
+				for (int i = 0; i < len2; i++) {
+					byte temp = in_data.get();
+					if (temp != c) {
+						System.out.println("wrong message");
+						System.exit(-1);
+					}
+				}
+				counter++;
+			}
+			// send data to client
+			OutputStream out;
+			DataOutputStream dos = null;
+			try {
+				out = clientSocket.getOutputStream();
+				dos = new DataOutputStream(out);
+			} catch (IOException e) {
+				System.out.println("Read failed");
+				System.exit(-1);
+			}
+			byte[] sendData = new byte[16];
+			byte[] head = generate_header(secrets[3], 4);
+			for (int i = 0; i < 12; i++) {
+				sendData[i] = head[i];
+			}
+			ByteBuffer content = ByteBuffer.allocate(4);
+			content.putInt(secrets[1]);
+			byte[] content_byte = content.array();
+			for (int i = 0; i < content_byte.length; i++) {
+				sendData[i + 12] = content_byte[i];
+			}
+			dos.write(sendData, 0, 16);
+	    }
 
 		public int[] stageC(int port_from_satge_b, ServerSocket new_server) throws IOException {
 
