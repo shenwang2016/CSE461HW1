@@ -48,7 +48,7 @@ public class Server {
 	}*/
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		ServerSocket serverSocket = new ServerSocket(12345);
+		ServerSocket serverSocket = new ServerSocket(5555);
 		// InetAddress IPAddress = InetAddress.getByName("attu4.cs.washington.edu");
         Socket clientSocket = null;
         try {

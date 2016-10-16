@@ -271,7 +271,7 @@ public class Client_Update{
 		sendData.put(message_byte);
 		byte[] send_data_a = sendData.array();
 		// send packet from client to server
-		DatagramPacket sendPacket = new DatagramPacket(send_data_a, send_data_a.length, IPAddress, 12345);
+		DatagramPacket sendPacket = new DatagramPacket(send_data_a, send_data_a.length, IPAddress, 5555);
 		clientSocket.send(sendPacket);
 		// stage a2
 		// send packet from server to client
