@@ -19,7 +19,7 @@ public class Server {
 	 * @throws IOException 
 	 */
 	@SuppressWarnings("resource")
-	/*public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 		ServerSocket serverSocket = new ServerSocket(12345);
 		//try {
 			//serverSocket = new ServerSocket(12345);
@@ -45,24 +45,8 @@ public class Server {
 	        Thread t = new Thread(ch);
 	        t.start();
 	    }
-	}*/
-	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-		ServerSocket serverSocket = new ServerSocket(5555);
-		// InetAddress IPAddress = InetAddress.getByName("attu4.cs.washington.edu");
-        Socket clientSocket = null;
-        try {
-            clientSocket = serverSocket.accept();
-            System.err.println("Accept succeeded.");
-        } catch (IOException e) {
-            System.err.println("Accept failed.");
-            System.exit(1);
-        }
-        int student_id = 0;
-        int[] secrets = new int[4];
-        //stageA();
-
 	}
+	
 
 	static class Client_handler implements Runnable {
 
