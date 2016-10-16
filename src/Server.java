@@ -38,20 +38,24 @@ public class Server {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			int new_udp_port = 0;
+			int[] data = null;
 			try {
-				new_udp_port = stageA();
+				data = stageA();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			ServerSocket new_server;
 			try {
-				new_server = new ServerSocket(port_from_satge_b);
+				new_server = new ServerSocket(data[2]);
 			} catch (IOException e) {
-				System.out.println("Could not listen on port " + port_from_satge_b);
+				System.out.println("Could not listen on port " + data[2]);
 				System.exit(-1);
 			}
-
+			try {
+				data = stageB(data);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		public void stageD(int[] from_stage_c, ServerSocket new_server) throws IOException {
@@ -176,7 +180,6 @@ public class Server {
 				System.out.println("in or out failed");
 				System.exit(-1);
 			}
-
 			// send data to client
 			OutputStream out;
 			DataOutputStream dos = null;
@@ -187,7 +190,6 @@ public class Server {
 				System.out.println("Read failed");
 				System.exit(-1);
 			}
-
 			int in_data_size = 12 + len + 4 + padding_bytes(len + 4);
 			while (counter != send_num) {
 				byte[] data = new byte[in_data_size];
@@ -223,7 +225,7 @@ public class Server {
 				counter++;
 			}
 			byte[] sendData = new byte[20];
-			byte[] head = generate_header(secrets[0], 8);
+			byte[] head = generate_header(secrets[1], 8);
 			for (int i = 0; i < 12; i++) {
 				sendData[i] = head[i];
 			}
@@ -284,14 +286,14 @@ public class Server {
 			OutputStream out;
 			DataOutputStream dos = null;
 			byte[] sendData = new byte[28];
+			try {
+				out = clientSocket.getOutputStream();
+				dos = new DataOutputStream(out);
+			} catch (IOException e) {
+				System.out.println("Read failed");
+				System.exit(-1);
+			}
 			while (true) {
-				try {
-					out = clientSocket.getOutputStream();
-					dos = new DataOutputStream(out);
-				} catch (IOException e) {
-					System.out.println("Read failed");
-					System.exit(-1);
-				}
 				byte[] head = generate_header(0, 16);
 				for (int i = 0; i < 12; i++) {
 					sendData[i] = head[i];
