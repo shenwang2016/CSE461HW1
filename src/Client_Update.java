@@ -28,7 +28,7 @@ public class Client_Update{
 	 */
 	public static void main(String[] args) throws Exception {
 		InetAddress IPAddress = InetAddress.getByName("attu3.cs.washington.edu");
-		//InetAddress IPAddress = 2601:602:9501:fa7c:3d5c:529a:e276:709f;
+		// InetAddress IPAddress = 2601:602:9501:fa7c:3d5c:529a:e276:709f;
 		// array to store secrets
 		int[] secrets = new int[4];
 		int[] result_from_a = part1_stageA(IPAddress);
