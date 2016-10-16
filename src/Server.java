@@ -16,18 +16,18 @@ import java.util.Random;
 public class Server {
 	/**
 	 * @param args
+	 * @throws IOException 
 	 */
 	@SuppressWarnings("resource")
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		ServerSocket serverSocket = null;
-		try {
-			serverSocket = new ServerSocket(12345);
-			serverSocket.setSoTimeout(2000);
-		} catch (IOException e1) {
+	/*public static void main(String[] args) throws IOException {
+		ServerSocket serverSocket = new ServerSocket(12345);
+		//try {
+			//serverSocket = new ServerSocket(12345);
+			//serverSocket.setSoTimeout(2000);
+		//} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+			//e1.printStackTrace();
+		//}
 		System.out.println("Bind");
 		while(true){
 			System.out.println("Giving out thread");
@@ -45,6 +45,23 @@ public class Server {
 	        Thread t = new Thread(ch);
 	        t.start();
 	    }
+	}*/
+	public static void main(String[] args) throws Exception {
+		// TODO Auto-generated method stub
+		ServerSocket serverSocket = new ServerSocket(12345);
+		// InetAddress IPAddress = InetAddress.getByName("attu4.cs.washington.edu");
+        Socket clientSocket = null;
+        try {
+            clientSocket = serverSocket.accept();
+            System.err.println("Accept succeeded.");
+        } catch (IOException e) {
+            System.err.println("Accept failed.");
+            System.exit(1);
+        }
+        int student_id = 0;
+        int[] secrets = new int[4];
+        //stageA();
+
 	}
 
 	static class Client_handler implements Runnable {
