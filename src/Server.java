@@ -10,26 +10,45 @@ import java.util.Random;
 
 
 /**
- * @author ylh96
+ * @author Shen Wang(1571169), Yilun Hua (1428927)
  *
  */
 public class Server {
 	/**
 	 * @param args
 	 */
+	@SuppressWarnings("resource")
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		ServerSocket serverSocket = null;
+		try {
+			serverSocket = new ServerSocket(12235);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		while(true){
+	        Socket clientSocket = null;
+	        try {
+	            clientSocket = serverSocket.accept();
+	        } catch (IOException e) {
+	            throw new RuntimeException(
+	                "Error accepting client connection", e);
+	        }
+	        Client_handler ch = new Client_handler(clientSocket);
+	        Thread t = new Thread(ch);
+	        t.start();
+	    }
 	}
 
-	class Client_handler implements Runnable {
+	static class Client_handler implements Runnable {
 
-		private Socket clientSocket;
-		private int student_id;
-		private int[] secrets = new int[4];
+		public Socket clientSocket;
+		public int student_id;
+		public int[] secrets = new int[4];
 
 		public Client_handler(Socket clientSocket) {
-			this.clientSocket = clientSocket;
+			this.clientSocket = clientSocket;	
 		}
 
 		@Override
