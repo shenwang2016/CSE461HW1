@@ -52,7 +52,52 @@ public class Server {
 			
 		}
 		
-		public void stageC() {
+		public int[] stageC(int port_from_satge_b) throws IOException {
+			ServerSocket new_server;
+			try{
+				 new_server = new ServerSocket(port_from_satge_b);
+			 } catch (IOException e) {
+				 System.out.println("Could not listen on port " + port_from_satge_b);
+				 System.exit(-1);
+			 }
+			// send data to client
+			 OutputStream out;
+			 DataOutputStream dos = null;
+			 try{
+		    	out = clientSocket.getOutputStream();
+		    	dos = new DataOutputStream(out);
+		     }catch (IOException e) {
+		    	System.out.println("Read failed");
+		    	System.exit(-1);
+		     }
+			 
+			 int actual_payload = 13;
+			 int padding_byte = padding_bytes(13);
+			 byte[] sendData = new byte[12 + actual_payload + padding_byte];
+			 byte[] head = generate_header(secrets[1], actual_payload);
+			 for (int i = 0; i < 12; i++) {
+		    		sendData[i] = head[i];
+		     }
+			 ByteBuffer content = ByteBuffer.allocate(actual_payload + padding_byte);
+			 Random rand = new Random();
+			 int num2 = rand.nextInt(99) + 1;
+		     int len2 = rand.nextInt(499) + 1;
+		     // create a random c
+		     byte[] c = new byte[1];
+		     rand.nextBytes(c);
+		     content.putInt(num2).putInt(len2).putInt(secrets[2]).put(c[0]);
+		     // stuffing with padding
+		     for(int i = 0; i < padding_byte; i++) {
+		    	 byte temp = 0;
+		    	 content.put(temp);
+		     }
+		     byte[] content_byte = content.array();
+		     for (int i = 0; i < content_byte.length; i++) {
+	    		sendData[i + 12] = content_byte[i];
+	    	 }
+	    	dos.write(sendData, 0, 12 + actual_payload + padding_byte);
+	    	int [] from_stage_c = {num2, len2, (int) c[0]};
+	    	return from_stage_c;
 			
 		}
 		
