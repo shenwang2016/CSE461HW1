@@ -42,18 +42,22 @@ public class Server {
 		Thread t = new Thread(ch);
 		t.start();
 		}*/
-		Client_handler.stageA();
+		DatagramSocket serverSocket = new DatagramSocket(12345);
+		byte[] receiveData = new byte[24];
+		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
 	}
 
 	static class Client_handler implements Runnable {
 
-		public Socket clientSocket;
+		public DatagramPacket receivePacket;
+		public DatagramSocket serverSocket;
 		public int student_id;
 		public int[] secrets = new int[4];
 
-		public Client_handler(Socket clientSocket) {
-			this.clientSocket = clientSocket;
+		public Client_handler(DatagramPacket receivePacket, DatagramSocket serverSocket) {
+			this.receivePacket = receivePacket;
+			this.serverSocket = serverSocket;
 		}
 
 		@Override
@@ -316,10 +320,9 @@ public class Server {
 			 * = { num_send, len, port_num }; return from_stage_a; }
 			 */
 
-			DatagramSocket serverSocket = new DatagramSocket(12345);
-			byte[] receiveData = new byte[24];
+			
 			byte[] sendData = new byte[28];
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			
 			serverSocket.receive(receivePacket);
 			InetAddress IPAddress = receivePacket.getAddress();
 			int port = receivePacket.getPort();
@@ -374,7 +377,6 @@ public class Server {
 			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 			serverSocket.send(sendPacket);
 			int[] from_stage_a = { num_send, len, port_num };
-			serverSocket.close();
 			return from_stage_a;
          }
 
