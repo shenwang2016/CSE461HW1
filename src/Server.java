@@ -23,29 +23,16 @@ public class Server {
 	 */
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
-		// ServerSocket serverSocket = new ServerSocket(12345);
-		// try {
-		// serverSocket = new ServerSocket(12345);
-		// serverSocket.setSoTimeout(2000);
-		// } catch (IOException e1) {
-		// TODO Auto-generated catch block
-		// e1.printStackTrace();
-		// }
-		/*
-		 * System.out.println("Bind"); while(true){ System.out.println(
-		 * "Giving out thread"); Socket clientSocket = null; try {
-		 * System.out.println("try"); clientSocket = serverSocket.accept();
-		 * System.out.println("end try"); } catch (IOException e) { throw new
-		 * RuntimeException( "Error accepting client connection", e); }
-		 * System.out.println(clientSocket == null); Client_handler ch = new
-		 * Client_handler(clientSocket); Thread t = new Thread(ch); t.start(); }
-		Client_handler ch = new Client_handler(clientSocket);
-		Thread t = new Thread(ch);
-		t.start();
-		}*/
-		DatagramSocket serverSocket = new DatagramSocket(12345);
-		byte[] receiveData = new byte[24];
-		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		DatagramSocket serverSocket = new DatagramSocket(12345); 
+		while(true){
+			byte[] receiveData = new byte[24];
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			new Thread(
+					new Client_handler(
+							receivePacket, serverSocket)
+						).start(); 
+		  	}
+		
 
 	}
 
@@ -96,7 +83,7 @@ public class Server {
 			}
 		}
 
-		public void stageD(int[] from_stage_c, ServerSocket new_server) throws IOException {
+		public void stageD(int[] from_stage_c, Socket clientSocket) throws IOException {
 			int num2 = from_stage_c[0];
 			int len2 = from_stage_c[1];
 			byte c = (byte) from_stage_c[2];
@@ -153,8 +140,7 @@ public class Server {
 			dos.write(sendData, 0, 16);
 		}
 
-		public int[] stageC(ServerSocket new_server) throws IOException {
-
+		public int[] stageC(Socket clientSocket) throws IOException {
 			// send data to client
 			OutputStream out;
 			DataOutputStream dos = null;
@@ -193,7 +179,6 @@ public class Server {
 			dos.write(sendData, 0, 12 + actual_payload + padding_byte);
 			int[] from_stage_c = { num2, len2, (int) c[0] };
 			return from_stage_c;
-
 		}
 
 		@SuppressWarnings("resource")
