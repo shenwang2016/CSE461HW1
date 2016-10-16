@@ -22,19 +22,23 @@ public class Server {
 		// TODO Auto-generated method stub
 		ServerSocket serverSocket = null;
 		try {
-			serverSocket = new ServerSocket(12235);
+			serverSocket = new ServerSocket(12345);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		System.out.println("Bind");
 		while(true){
+			System.out.println("Giving out thread");
 	        Socket clientSocket = null;
 	        try {
+	        	System.out.println("try");
 	            clientSocket = serverSocket.accept();
 	        } catch (IOException e) {
 	            throw new RuntimeException(
 	                "Error accepting client connection", e);
 	        }
+	        System.out.println(clientSocket == null);
 	        Client_handler ch = new Client_handler(clientSocket);
 	        Thread t = new Thread(ch);
 	        t.start();
