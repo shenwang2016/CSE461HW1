@@ -41,15 +41,27 @@ public class Server {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			ServerSocket new_server;
+			int next_port = 0;
 			try {
-				new_server = new ServerSocket(data[2]);
+				next_port = stageB(data);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			ServerSocket new_server = null;
+			try {
+				new_server = new ServerSocket(next_port);
 			} catch (IOException e) {
-				System.out.println("Could not listen on port " + data[2]);
+				System.out.println("Could not listen on port " + next_port);
 				System.exit(-1);
 			}
+			int[] data_from_c = null;
 			try {
-				data = stageB(data);
+				data_from_c = stageC(new_server);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				stageD(data_from_c, new_server);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -112,7 +124,7 @@ public class Server {
 			dos.write(sendData, 0, 16);
 	    }
 
-		public int[] stageC(int port_from_satge_b, ServerSocket new_server) throws IOException {
+		public int[] stageC(ServerSocket new_server) throws IOException {
 
 			// send data to client
 			OutputStream out;
@@ -156,6 +168,7 @@ public class Server {
 		}
 
 		public int stageB(int[] from_stage_a) throws Exception {
+			@SuppressWarnings("unused")
 			ServerSocket new_server;
 			int send_num = from_stage_a[0];
 			int len = from_stage_a[1];
