@@ -8,9 +8,6 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-/**
- * 
- */
 
 /**
  * @author ylh96
