@@ -3,11 +3,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.Random;
-
 
 /**
  * @author Shen Wang(1571169), Yilun Hua (1428927)
@@ -16,37 +18,39 @@ import java.util.Random;
 public class Server {
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
-		ServerSocket serverSocket = new ServerSocket(12345);
-		//try {
-			//serverSocket = new ServerSocket(12345);
-			//serverSocket.setSoTimeout(2000);
-		//} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			//e1.printStackTrace();
-		//}
-		System.out.println("Bind");
-		while(true){
-			System.out.println("Giving out thread");
-	        Socket clientSocket = null;
-	        try {
-	        	System.out.println("try");
-	            clientSocket = serverSocket.accept();
-	            System.out.println("end try");
-	        } catch (IOException e) {
-	            throw new RuntimeException(
-	                "Error accepting client connection", e);
-	        }
-	        System.out.println(clientSocket == null);
-	        Client_handler ch = new Client_handler(clientSocket);
-	        Thread t = new Thread(ch);
-	        t.start();
-	    }
+		// ServerSocket serverSocket = new ServerSocket(12345);
+		DatagramSocket serverSocket = new DatagramSocket(12345);
+		// try {
+		// serverSocket = new ServerSocket(12345);
+		// serverSocket.setSoTimeout(2000);
+		// } catch (IOException e1) {
+		// TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
+		/*
+		 * System.out.println("Bind"); while(true){ System.out.println(
+		 * "Giving out thread"); Socket clientSocket = null; try {
+		 * System.out.println("try"); clientSocket = serverSocket.accept();
+		 * System.out.println("end try"); } catch (IOException e) { throw new
+		 * RuntimeException( "Error accepting client connection", e); }
+		 * System.out.println(clientSocket == null); Client_handler ch = new
+		 * Client_handler(clientSocket); Thread t = new Thread(ch); t.start(); }
+		 */
+		byte[] receiveData = new byte[1024];
+		byte[] sendData = new byte[1024];
+		while (true) {
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			serverSocket.receive(receivePacket);
+			Client_handler ch = new Client_handler(clientSocket);
+			Thread t = new Thread(ch);
+			t.start();
+		}
+
 	}
-	
 
 	static class Client_handler implements Runnable {
 
@@ -55,7 +59,7 @@ public class Server {
 		public int[] secrets = new int[4];
 
 		public Client_handler(Socket clientSocket) {
-			this.clientSocket = clientSocket;	
+			this.clientSocket = clientSocket;
 		}
 
 		@Override
@@ -148,7 +152,7 @@ public class Server {
 				sendData[i + 12] = content_byte[i];
 			}
 			dos.write(sendData, 0, 16);
-	    }
+		}
 
 		public int[] stageC(ServerSocket new_server) throws IOException {
 
@@ -283,21 +287,54 @@ public class Server {
 
 		public int[] stageA() throws Exception {
 			// get input from client
-			InputStream in;
-			DataInputStream dis = null;
-			try {
-				in = clientSocket.getInputStream();
-				dis = new DataInputStream(in);
-			} catch (IOException e) {
-				System.out.println("in or out failed");
-				System.exit(-1);
-			}
-			byte[] data = new byte[24];
-			dis.read(data);
-			ByteBuffer in_data = ByteBuffer.wrap(data);
-			student_id = in_data.getShort(10);
+			/*
+			 * InputStream in; DataInputStream dis = null; try { in =
+			 * clientSocket.getInputStream(); dis = new DataInputStream(in); }
+			 * catch (IOException e) { System.out.println("in or out failed");
+			 * System.exit(-1); } byte[] data = new byte[24]; dis.read(data);
+			 * ByteBuffer in_data = ByteBuffer.wrap(data); student_id =
+			 * in_data.getShort(10); // verify whether the secret is 0 if
+			 * (verify_header(0, in_data)) { System.out.println(
+			 * "header format problem"); System.exit(-1); } String secret_phase
+			 * = "hello world\0"; int phase_byte_length =
+			 * secret_phase.getBytes().length; assert (phase_byte_length == 12);
+			 * String incoming_phase = ""; for (int i = 0; i <
+			 * phase_byte_length; i++) { byte c = 0; try { c = in_data.get(i +
+			 * 12); } catch (ArrayIndexOutOfBoundsException e) {
+			 * System.out.println("wrong message"); System.exit(-1); }
+			 * incoming_phase += (char) c; } if
+			 * (!incoming_phase.equals(secret_phase)) { System.out.println(
+			 * "wrong message"); System.exit(-1); } OutputStream out;
+			 * DataOutputStream dos = null; byte[] sendData = new byte[28]; try
+			 * { out = clientSocket.getOutputStream(); dos = new
+			 * DataOutputStream(out); } catch (IOException e) {
+			 * System.out.println("Read failed"); System.exit(-1); } while
+			 * (true) { byte[] head = generate_header(0, 16); for (int i = 0; i
+			 * < 12; i++) { sendData[i] = head[i]; } ByteBuffer content =
+			 * ByteBuffer.allocate(16); Random rand = new Random(); int port_num
+			 * = rand.nextInt(49000) + 1024; while (port_num - 12235 == 0) {
+			 * port_num = rand.nextInt(49000) + 1024; } int num_send =
+			 * rand.nextInt(99) + 1; int len = rand.nextInt(499) + 1;
+			 * content.putInt(num_send).putInt(len).putInt(port_num).putInt(
+			 * secrets[0]); byte[] content_byte = content.array(); for (int i =
+			 * 0; i < content_byte.length; i++) { sendData[i + 12] =
+			 * content_byte[i]; } dos.write(sendData, 0, 28); int[] from_stage_a
+			 * = { num_send, len, port_num }; return from_stage_a; }
+			 */
+
+			DatagramSocket serverSocket = new DatagramSocket(12345);
+			byte[] receiveData = new byte[24];
+			byte[] sendData = new byte[28];
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+			serverSocket.receive(receivePacket);
+			InetAddress IPAddress = receivePacket.getAddress();
+			int port = receivePacket.getPort();
+			// extract data from server packet
+			byte[] fromClient = receivePacket.getData();
+			ByteBuffer bf = ByteBuffer.wrap(fromClient);
+			student_id = bf.getShort(10);
 			// verify whether the secret is 0
-			if (verify_header(0, in_data)) {
+			if (verify_header(0, bf)) {
 				System.out.println("header format problem");
 				System.exit(-1);
 			}
@@ -308,7 +345,7 @@ public class Server {
 			for (int i = 0; i < phase_byte_length; i++) {
 				byte c = 0;
 				try {
-					c = in_data.get(i + 12);
+					c = bf.get(i + 12);
 				} catch (ArrayIndexOutOfBoundsException e) {
 					System.out.println("wrong message");
 					System.exit(-1);
@@ -319,39 +356,32 @@ public class Server {
 				System.out.println("wrong message");
 				System.exit(-1);
 			}
-			OutputStream out;
-			DataOutputStream dos = null;
-			byte[] sendData = new byte[28];
-			try {
-				out = clientSocket.getOutputStream();
-				dos = new DataOutputStream(out);
-			} catch (IOException e) {
-				System.out.println("Read failed");
-				System.exit(-1);
+
+			// now send packet back to client
+
+			byte[] head = generate_header(0, 16);
+			for (int i = 0; i < 12; i++) {
+				sendData[i] = head[i];
 			}
-			while (true) {
-				byte[] head = generate_header(0, 16);
-				for (int i = 0; i < 12; i++) {
-					sendData[i] = head[i];
-				}
-				ByteBuffer content = ByteBuffer.allocate(16);
-				Random rand = new Random();
-				int port_num = rand.nextInt(49000) + 1024;
-				while (port_num - 12235 == 0) {
-					port_num = rand.nextInt(49000) + 1024;
-				}
-				int num_send = rand.nextInt(99) + 1;
-				int len = rand.nextInt(499) + 1;
-				content.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
-				byte[] content_byte = content.array();
-				for (int i = 0; i < content_byte.length; i++) {
-					sendData[i + 12] = content_byte[i];
-				}
-				dos.write(sendData, 0, 28);
-				int[] from_stage_a = { num_send, len, port_num };
-				return from_stage_a;
+			ByteBuffer content = ByteBuffer.allocate(16);
+			Random rand = new Random();
+			int port_num = rand.nextInt(49000) + 1024;
+			while (port_num - 12235 == 0) {
+				port_num = rand.nextInt(49000) + 1024;
 			}
-		}
+			int num_send = rand.nextInt(99) + 1;
+			int len = rand.nextInt(499) + 1;
+			content.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
+			byte[] content_byte = content.array();
+			for (int i = 0; i < content_byte.length; i++) {
+				sendData[i + 12] = content_byte[i];
+			}
+
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+			int[] from_stage_a = { num_send, len, port_num };
+			serverSocket.close();
+			return from_stage_a;
+         }
 
 		// we only need to verify psecret, step num, and student ID last 3
 		// digits
