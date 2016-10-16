@@ -34,6 +34,7 @@ public class Server {
 	        try {
 	        	System.out.println("try");
 	            clientSocket = serverSocket.accept();
+	            System.out.println("end try");
 	        } catch (IOException e) {
 	            throw new RuntimeException(
 	                "Error accepting client connection", e);
