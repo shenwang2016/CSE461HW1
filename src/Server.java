@@ -21,7 +21,6 @@ public class Server {
 	 * @param args
 	 * @throws IOException
 	 */
-	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
 		DatagramSocket serverSocket = new DatagramSocket(12345); 
 		while(true){
@@ -70,14 +69,21 @@ public class Server {
 				System.out.println("Could not listen on port " + next_port);
 				System.exit(-1);
 			}
+			Socket client = null;
+			try {
+				client = new_server.accept();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			int[] data_from_c = null;
 			try {
-				data_from_c = stageC(new_server);
+				data_from_c = stageC(client);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			try {
-				stageD(data_from_c, new_server);
+				stageD(data_from_c, client);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
