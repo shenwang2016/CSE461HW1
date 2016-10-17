@@ -21,6 +21,7 @@ public class Server {
 	 * @param args
 	 * @throws IOException
 	 */
+	public int student_id = 0;
 	public static void main(String[] args) throws IOException {
 		DatagramSocket serverSocket = new DatagramSocket(12345); 
 		while(true){
@@ -273,7 +274,7 @@ public class Server {
 			// extract data from server packet
 			byte[] fromClient = receivePacket.getData();
 			ByteBuffer bf = ByteBuffer.wrap(fromClient);
-			int student_id = bf.getShort(10);
+			student_id = bf.getShort(10);
 			// verify whether the secret is 0
 			if (!verify_header(0, bf)) {
 				System.out.println("header format problem");
@@ -333,9 +334,9 @@ public class Server {
 			if (head_buf.getShort(8) != (short) 1) {
 				return false;
 			}
-			//if (head_buf.getShort(10) != (short) student_id) {
-				//return false;
-			//}
+			if (head_buf.getShort(10) != (short) student_id) {
+				return false;
+			}
 			return true;
 		}
 
