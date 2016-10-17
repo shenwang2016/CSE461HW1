@@ -108,7 +108,7 @@ public class Server {
 				dis.read(data);
 				ByteBuffer in_data = ByteBuffer.wrap(data);
 				// verify whether the secret is 0
-				if (verify_header(secrets[2], in_data)) {
+				if (!verify_header(secrets[2], in_data)) {
 					System.out.println("header format problem");
 					System.exit(-1);
 				}
@@ -275,7 +275,7 @@ public class Server {
 			ByteBuffer bf = ByteBuffer.wrap(fromClient);
 			int student_id = bf.getShort(10);
 			// verify whether the secret is 0
-			if (verify_header(0, bf)) {
+			if (!verify_header(0, bf)) {
 				System.out.println("header format problem");
 				System.exit(-1);
 			}
