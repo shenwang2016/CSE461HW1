@@ -21,7 +21,8 @@ public class Server {
 	 * @param args
 	 * @throws IOException
 	 */
-	public int student_id = 0;
+	
+
 	public static void main(String[] args) throws IOException {
 		DatagramSocket serverSocket = new DatagramSocket(12345); 
 		while(true){
@@ -39,9 +40,9 @@ public class Server {
 
 		public DatagramPacket receivePacket;
 		public DatagramSocket serverSocket;
-		public int student_id;
+		public int student_id = 0;
 		public int[] secrets = new int[4];
-
+		
 		public Client_handler(DatagramPacket receivePacket, DatagramSocket serverSocket) {
 			this.receivePacket = receivePacket;
 			this.serverSocket = serverSocket;
@@ -50,6 +51,7 @@ public class Server {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			generate_secret();
 			int[] data = null;
 			try {
 				data = stageA();
