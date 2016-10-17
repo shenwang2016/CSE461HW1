@@ -96,15 +96,18 @@ public class Server {
 			// get input from client
 			InputStream in;
 			DataInputStream dis = null;
+			System.out.println("apple" + clientSocket.isClosed());
 			try {
 				in = clientSocket.getInputStream();
 				dis = new DataInputStream(in);
+				System.out.println("first try");
 			} catch (IOException e) {
 				System.out.println("in or out failed");
 				System.exit(-1);
 			}
 			int counter = 0;
 			while (counter != num2) {
+				System.out.println("enter while loop");
 				byte[] data = new byte[12 + len2];
 				dis.read(data);
 				ByteBuffer in_data = ByteBuffer.wrap(data);
