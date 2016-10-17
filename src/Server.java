@@ -119,6 +119,7 @@ public class Server {
 				for (int i = 0; i < len2; i++) {
 					byte temp = in_data.get();
 					if (temp != c) {
+						System.out.println(i);
 						System.out.println("wrong message");
 						System.exit(-1);
 					}
