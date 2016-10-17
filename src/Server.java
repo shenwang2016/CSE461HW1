@@ -426,7 +426,9 @@ public class Server {
 
 		public void generate_header(int secret, int content_len, ByteBuffer header) {
 			//ByteBuffer header = ByteBuffer.allocate(12);
-			header.putInt(content_len).putInt(secret).putShort((short) 2).putShort((short) student_id);
+			short step_num = 2;
+			short student = 927;
+			header.putInt(content_len).putInt(secret).putShort(step_num).putShort(student);
 			//return header.array();
 		}
 
