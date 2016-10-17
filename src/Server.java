@@ -76,7 +76,7 @@ public class Server {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			int[] data_from_c = null;
+			ByteBuffer data_from_c = null;
 			try {
 				data_from_c = stageC(client);
 			} catch (Exception e) {
@@ -89,10 +89,10 @@ public class Server {
 			}
 		}
 
-		public void stageD(int[] from_stage_c, Socket clientSocket) throws IOException {
-			int num2 = from_stage_c[0];
-			int len2 = from_stage_c[1];
-			byte c = (byte) from_stage_c[2];
+		public void stageD(ByteBuffer from_stage_c, Socket clientSocket) throws IOException {
+			int num2 = from_stage_c.getInt(0);
+			int len2 = from_stage_c.getInt(4);
+			byte c = from_stage_c.get(8);
 			// get input from client
 			InputStream in;
 			DataInputStream dis = null;
@@ -150,7 +150,7 @@ public class Server {
 			dos.write(sendData, 0, 16);
 		}
 
-		public int[] stageC(Socket clientSocket) throws IOException {
+		public ByteBuffer stageC(Socket clientSocket) throws IOException {
 			// send data to client
 			OutputStream out;
 			DataOutputStream dos = null;
@@ -187,7 +187,8 @@ public class Server {
 				sendData[i + 12] = content_byte[i];
 			}
 			dos.write(sendData, 0, 12 + actual_payload + padding_byte);
-			int[] from_stage_c = { num2, len2, (int) c[0] };
+			ByteBuffer from_stage_c = ByteBuffer.allocate(9);
+			from_stage_c.putInt(num2).putInt(len2).put(c);
 			return from_stage_c;
 		}
 
