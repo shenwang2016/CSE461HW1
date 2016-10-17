@@ -93,6 +93,7 @@ public class Server {
 			int num2 = from_stage_c.getInt(0);
 			int len2 = from_stage_c.getInt(4);
 			byte c = from_stage_c.get(8);
+			System.out.println("char origin: " + c);
 			// get input from client
 			InputStream in;
 			DataInputStream dis = null;
@@ -118,6 +119,7 @@ public class Server {
 				}
 				for (int i = 0; i < len2; i++) {
 					byte temp = in_data.get();
+					System.out.println("char get: " + temp);
 					if (temp != c) {
 						System.out.println(i);
 						System.out.println("wrong message");
