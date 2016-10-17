@@ -352,9 +352,6 @@ public class Server {
 			for (int i = 0; i < 16; i++) {
 				sendData[i + 12] = content_byte[i];
 			}
-
-			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
-			serverSocket.send(sendPacket);
 			ByteBuffer bfA = ByteBuffer.wrap(sendData);
 			System.out.println("len A: " + bfA.getInt(0));
 			System.out.println("psecret A: " + bfA.getInt(4));
@@ -365,6 +362,19 @@ public class Server {
 			System.out.println("LEN A: " + bf.getInt(16));
 			System.out.println("UDP PORT A: " + bf.getInt(20));
 			System.out.println("SECRET A: " + bf.getInt(24));
+
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+			serverSocket.send(sendPacket);
+			
+			/*System.out.println("len A: " + bfA.getInt(0));
+			System.out.println("psecret A: " + bfA.getInt(4));
+			System.out.println("step num A: " + bfA.getInt(8));
+			System.out.println("sid A: " + bfA.getInt(10));
+			
+			System.out.println("NUM A: " + bfA.getInt(12));
+			System.out.println("LEN A: " + bf.getInt(16));
+			System.out.println("UDP PORT A: " + bf.getInt(20));
+			System.out.println("SECRET A: " + bf.getInt(24));*/
 			int[] from_stage_a = {num_send, len, port_num };
 			return from_stage_a;
          }
