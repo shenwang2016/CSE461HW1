@@ -338,16 +338,19 @@ public class Server {
 		// we only need to verify psecret, step num, and student ID last 3
 		// digits
 		public boolean verify_header(int psecret, ByteBuffer head_buf) {
+			int psecret_get = head_buf.getInt(4);
+			int step_num_get = head_buf.getShort();
+			int student_id_get = head_buf.getShort();
 			System.out.println("enter verify header");
-			if (psecret != head_buf.getInt(4)) {
+			if (psecret != psecret_get) {
 				System.out.println("psecret wrong");
 				return false;
 			}
-			if (head_buf.getShort(8) != (short) 1) {
+			if (step_num_get != (short) 1) {
 				System.out.println("step num wrong");
 				return false;
 			}
-			if (head_buf.getShort(10) != (short) student_id) {
+			if (student_id_get != (short) student_id) {
 				System.out.println("sid wrong");
 				return false;
 			}
