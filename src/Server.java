@@ -255,7 +255,7 @@ public class Server {
 				counter++;
 			}
 			byte[] sendData = new byte[20];
-			byte[] head = generate_header(secrets[1], 8);
+			byte[] head = generate_header(secrets[0], 8);
 			for (int i = 0; i < 12; i++) {
 				sendData[i] = head[i];
 			}
@@ -265,11 +265,20 @@ public class Server {
 			while (port_num - 12235 == 0) {
 				tcp_port = rand.nextInt(49000) + 1024;
 			}
+			System.out.println(secrets[1]);
 			content.putInt(tcp_port).putInt(secrets[1]);
 			byte[] content_byte = content.array();
 			for (int i = 0; i < content_byte.length; i++) {
 				sendData[i + 12] = content_byte[i];
 			}
+			ByteBuffer bf = ByteBuffer.wrap(sendData);
+			System.out.println("len: " + bf.getInt(0));
+			System.out.println("psecret: " + bf.getInt(4));
+			System.out.println("step num: " + bf.getInt(8));
+			System.out.println("sid: " + bf.getInt(10));
+			
+			System.out.println("tcp port: " + bf.getInt(12));
+			System.out.println("secretB: " + bf.getInt(16));
 			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 			clientSocket.send(sendPacket);
 			return tcp_port;
@@ -323,6 +332,7 @@ public class Server {
 			}
 			int num_send = rand.nextInt(99) + 1;
 			int len = rand.nextInt(499) + 1;
+			System.out.println(secrets[0]);
 			content.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
 			byte[] content_byte = content.array();
 			for (int i = 0; i < content_byte.length; i++) {
@@ -331,7 +341,17 @@ public class Server {
 
 			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
 			serverSocket.send(sendPacket);
-			int[] from_stage_a = { num_send, len, port_num };
+			ByteBuffer bfA = ByteBuffer.wrap(sendData);
+			System.out.println("len A: " + bfA.getInt(0));
+			System.out.println("psecret A: " + bfA.getInt(4));
+			System.out.println("step num A: " + bfA.getInt(8));
+			System.out.println("sid A: " + bfA.getInt(10));
+			
+			System.out.println("NUM A: " + bfA.getInt(12));
+			System.out.println("LEN A: " + bf.getInt(16));
+			System.out.println("UDP PORT A: " + bf.getInt(20));
+			System.out.println("SECRET A: " + bf.getInt(24));
+			int[] from_stage_a = {num_send, len, port_num };
 			return from_stage_a;
          }
 
