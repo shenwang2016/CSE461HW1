@@ -333,9 +333,9 @@ public class Server {
 			if (head_buf.getShort(8) != (short) 1) {
 				return false;
 			}
-			if (head_buf.getShort(10) != (short) student_id) {
-				return false;
-			}
+			//if (head_buf.getShort(10) != (short) student_id) {
+				//return false;
+			//}
 			return true;
 		}
 
