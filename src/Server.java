@@ -348,7 +348,8 @@ public class Server {
 			
 			
 			byte[] content_byte = content.array();
-			for (int i = 0; i < content_byte.length; i++) {
+			assert(content_byte.length == 16);
+			for (int i = 0; i < 16; i++) {
 				sendData[i + 12] = content_byte[i];
 			}
 
