@@ -341,11 +341,10 @@ public class Server {
 			// now send packet back to client
 
 			generate_header(0, 16, sendData);
-			/*for (int i = 0; i < 12; i++) {
-				sendData[i] = head[i];
-			}*/
-			//sendData.put(head);
-			//ByteBuffer content = ByteBuffer.allocate(16);
+			System.out.println("fuck generate header");
+			System.out.println(sendData.getShort(8));
+			System.out.println(sendData.getShort(10));
+			
 			Random rand = new Random();
 			int port_num = rand.nextInt(49000) + 1024;
 			System.out.println("port num: " + port_num);
