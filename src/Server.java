@@ -98,22 +98,24 @@ public class Server {
 			InputStream in;
 			DataInputStream dis = null;
 			System.out.println("apple" + clientSocket.isClosed());
-			try {
-				in = clientSocket.getInputStream();
-				dis = new DataInputStream(in);
-				System.out.println("first try");
-			} catch (IOException e) {
-				System.out.println("in or out failed");
-				System.exit(-1);
-			}
+			
 			int counter = 0;
 			while (counter != num2) {
+				try {
+					in = clientSocket.getInputStream();
+					dis = new DataInputStream(in);
+					System.out.println("first try");
+				} catch (IOException e) {
+					System.out.println("in or out failed");
+					System.exit(-1);
+				}
 				System.out.println("enter while loop");
 				byte[] data = new byte[12 + len2];
 				dis.read(data);
 				ByteBuffer in_data = ByteBuffer.wrap(data);
 				// verify whether the secret is 0
 				if (!verify_header(secrets[2], in_data)) {
+					System.out.println(counter);
 					System.out.println("header format problem");
 					System.exit(-1);
 				}
