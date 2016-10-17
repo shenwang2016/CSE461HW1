@@ -254,7 +254,7 @@ public class Client_Update{
 	
 	public static int[] part1_stageA(InetAddress IPAddress) throws UnknownHostException, IOException {
 		DatagramSocket clientSocket = new DatagramSocket();
-		clientSocket.connect(IPAddress, 12345);
+		clientSocket.connect(IPAddress, 54321);
 		if (clientSocket.isConnected()) {
 			System.out.println("Connected");
 		} else {
@@ -271,7 +271,7 @@ public class Client_Update{
 		sendData.put(message_byte);
 		byte[] send_data_a = sendData.array();
 		// send packet from client to server
-		DatagramPacket sendPacket = new DatagramPacket(send_data_a, send_data_a.length, IPAddress,12345);
+		DatagramPacket sendPacket = new DatagramPacket(send_data_a, send_data_a.length, IPAddress,54321);
 		clientSocket.send(sendPacket);
 		// stage a2
 		// send packet from server to client
