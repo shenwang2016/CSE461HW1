@@ -289,7 +289,8 @@ public class Server {
 
 		public int[] stageA() throws Exception {
 			// get input from client
-			byte[] sendData = new byte[28];
+			// byte[] sendData = new byte[28];
+			ByteBuffer sendData = ByteBuffer.allocate(28);
 			InetAddress IPAddress = receivePacket.getAddress();
 			int port = receivePacket.getPort();
 			// extract data from server packet
@@ -323,9 +324,10 @@ public class Server {
 			// now send packet back to client
 
 			byte[] head = generate_header(0, 16);
-			for (int i = 0; i < 12; i++) {
+			/*for (int i = 0; i < 12; i++) {
 				sendData[i] = head[i];
-			}
+			}*/
+			sendData.put(head);
 			ByteBuffer content = ByteBuffer.allocate(16);
 			Random rand = new Random();
 			int port_num = rand.nextInt(49000) + 1024;
@@ -348,22 +350,23 @@ public class Server {
 			
 			
 			byte[] content_byte = content.array();
+			sendData.put(content_byte);
 			assert(content_byte.length == 16);
-			for (int i = 0; i < 16; i++) {
+			/*for (int i = 0; i < 16; i++) {
 				sendData[i + 12] = content_byte[i];
-			}
-			ByteBuffer bfA = ByteBuffer.wrap(sendData);
-			System.out.println("len A: " + bfA.getInt(0));
-			System.out.println("psecret A: " + bfA.getInt(4));
-			System.out.println("step num A: " + bfA.getInt(8));
-			System.out.println("sid A: " + bfA.getInt(10));
+			}*/
 			
-			System.out.println("NUM A: " + bfA.getInt(12));
-			System.out.println("LEN A: " + bf.getInt(16));
-			System.out.println("UDP PORT A: " + bf.getInt(20));
-			System.out.println("SECRET A: " + bf.getInt(24));
-
-			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+			System.out.println("len A: " + sendData.getInt(0));
+			System.out.println("psecret A: " + sendData.getInt(4));
+			System.out.println("step num A: " + sendData.getInt(8));
+			System.out.println("sid A: " + sendData.getInt(10));
+			
+			System.out.println("NUM A: " + sendData.getInt(12));
+			System.out.println("LEN A: " + sendData.getInt(16));
+			System.out.println("UDP PORT A: " + sendData.getInt(20));
+			System.out.println("SECRET A: " + sendData.getInt(24));
+            byte[] send = sendData.array();
+			DatagramPacket sendPacket = new DatagramPacket(send, send.length, IPAddress, port);
 			serverSocket.send(sendPacket);
 			
 			/*System.out.println("len A: " + bfA.getInt(0));
