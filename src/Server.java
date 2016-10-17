@@ -95,12 +95,13 @@ public class Server {
 			byte c = from_stage_c.get(8);
 			System.out.println("char origin: " + c);
 			// get input from client
-			InputStream in;
-			DataInputStream dis = null;
+			
 			System.out.println("apple" + clientSocket.isClosed());
 			
 			int counter = 0;
 			while (counter != num2) {
+				InputStream in;
+				DataInputStream dis = null;
 				try {
 					in = clientSocket.getInputStream();
 					dis = new DataInputStream(in);
@@ -338,12 +339,15 @@ public class Server {
 		// digits
 		public boolean verify_header(int psecret, ByteBuffer head_buf) {
 			if (psecret != head_buf.getInt(4)) {
+				System.out.println("psecret wrong");
 				return false;
 			}
 			if (head_buf.getShort(8) != (short) 1) {
+				System.out.println("step num wrong");
 				return false;
 			}
 			if (head_buf.getShort(10) != (short) student_id) {
+				System.out.println("sid wrong");
 				return false;
 			}
 			return true;
