@@ -374,8 +374,8 @@ public class Server {
 			
 			System.out.println("len A: " + sendData.getInt(0));
 			System.out.println("psecret A: " + sendData.getInt(4));
-			System.out.println("step num A: " + sendData.getInt(8));
-			System.out.println("sid A: " + sendData.getInt(10));
+			System.out.println("step num A: " + sendData.getShort(8));
+			System.out.println("sid A: " + sendData.getShort(10));
 			
 			System.out.println("NUM A: " + sendData.getInt(12));
 			System.out.println("LEN A: " + sendData.getInt(16));
