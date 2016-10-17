@@ -338,6 +338,7 @@ public class Server {
 		// we only need to verify psecret, step num, and student ID last 3
 		// digits
 		public boolean verify_header(int psecret, ByteBuffer head_buf) {
+			System.out.println("enter verify header");
 			if (psecret != head_buf.getInt(4)) {
 				System.out.println("psecret wrong");
 				return false;
