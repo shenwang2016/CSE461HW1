@@ -327,12 +327,15 @@ public class Server {
 			ByteBuffer content = ByteBuffer.allocate(16);
 			Random rand = new Random();
 			int port_num = rand.nextInt(49000) + 1024;
+			System.out.println("port num: " + port_num);
 			while (port_num - 12235 == 0) {
 				port_num = rand.nextInt(49000) + 1024;
 			}
 			int num_send = rand.nextInt(99) + 1;
+			System.out.println("num send: " + num_send);
 			int len = rand.nextInt(499) + 1;
-			System.out.println(secrets[0]);
+			System.out.println("len: " + len);
+			System.out.println("appleAA: " + secrets[0]);
 			content.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
 			byte[] content_byte = content.array();
 			for (int i = 0; i < content_byte.length; i++) {
