@@ -91,7 +91,7 @@ public class Server {
 			}
 		}
 
-		public void stageD(ByteBuffer from_stage_c, Socket clientSocket) throws IOException {
+		/*public void stageD(ByteBuffer from_stage_c, Socket clientSocket) throws IOException {
 			int num2 = from_stage_c.getInt(0);
 			int len2 = from_stage_c.getInt(4);
 			byte c = from_stage_c.get(8);
@@ -155,9 +155,9 @@ public class Server {
 				sendData[i + 12] = content_byte[i];
 			}
 			dos.write(sendData, 0, 16);
-		}
+		}*/
 
-		public ByteBuffer stageC(Socket clientSocket) throws IOException {
+		/*public ByteBuffer stageC(Socket clientSocket) throws IOException {
 			// send data to client
 			OutputStream out;
 			DataOutputStream dos = null;
@@ -197,10 +197,10 @@ public class Server {
 			ByteBuffer from_stage_c = ByteBuffer.allocate(9);
 			from_stage_c.putInt(num2).putInt(len2).put(c);
 			return from_stage_c;
-		}
+		}*/
 
 		@SuppressWarnings("resource")
-		public int stageB(int[] from_stage_a) throws Exception {
+		/*public int stageB(int[] from_stage_a) throws Exception {
 			int send_num = from_stage_a[0];
 			int len = from_stage_a[1];
 			int port_num = from_stage_a[2];
@@ -251,13 +251,13 @@ public class Server {
 				/*for (int i = 0; i < 12; i++) {
 					sendData[i] = head[i];
 				}*/
-				byte[] ack = ByteBuffer.allocate(4).putInt(packet_id).array();
-				sendData.put(ack);
+				/*byte[] ack = ByteBuffer.allocate(4).putInt(packet_id).array();
+				sendData.put(ack);*/
 				/*for (int i = 0; i < 4; i++) {
 					sendData[12 + i] = ack[i];
 				}*/
 				// prepare packet
-				System.out.println("len a to b: " + len);
+				/*System.out.println("len a to b: " + len);
 				System.out.println("len b: " + sendData.getInt(0));
 				System.out.println("psecret b: " + sendData.getInt(4));
 				System.out.println("step num b: " + sendData.getInt(8));
@@ -271,11 +271,11 @@ public class Server {
 				counter++;
 			}
 			ByteBuffer sendData = ByteBuffer.allocate(20);
-			byte[] head = generate_header(secrets[0], 8);
+			byte[] head = generate_header(secrets[0], 8);*/
 			/*for (int i = 0; i < 12; i++) {
 				sendData[i] = head[i];
 			}*/
-			sendData.put(head);
+			/*sendData.put(head);
 			ByteBuffer content = ByteBuffer.allocate(8);
 			Random rand = new Random();
 			int tcp_port = rand.nextInt(49000) + 1024;
@@ -290,7 +290,7 @@ public class Server {
 				sendData[i + 12] = content_byte[i];
 			}*/
 			
-			System.out.println("len: " + sendData.getInt(0));
+			/*System.out.println("len: " + sendData.getInt(0));
 			System.out.println("psecret: " + sendData.getInt(4));
 			System.out.println("step num: " + sendData.getInt(8));
 			System.out.println("sid: " + sendData.getInt(10));
@@ -302,7 +302,7 @@ public class Server {
 			clientSocket.send(sendPacket);
 			return tcp_port;
 
-		}
+		}*/
 
 		public int[] stageA() throws Exception {
 			// get input from client
@@ -340,12 +340,12 @@ public class Server {
 
 			// now send packet back to client
 
-			byte[] head = generate_header(0, 16);
+			generate_header(0, 16, sendData);
 			/*for (int i = 0; i < 12; i++) {
 				sendData[i] = head[i];
 			}*/
-			sendData.put(head);
-			ByteBuffer content = ByteBuffer.allocate(16);
+			//sendData.put(head);
+			//ByteBuffer content = ByteBuffer.allocate(16);
 			Random rand = new Random();
 			int port_num = rand.nextInt(49000) + 1024;
 			System.out.println("port num: " + port_num);
@@ -357,18 +357,18 @@ public class Server {
 			int len = rand.nextInt(499) + 1;
 			System.out.println("len: " + len);
 			System.out.println("appleAA: " + secrets[0]);
-			content.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
+			sendData.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
 			
-			System.out.println("NUM A: " + content.getInt(0));
-			System.out.println("LEN A: " + content.getInt(4));
-			System.out.println("UDP PORT A: " + content.getInt(8));
-			System.out.println("SECRET A: " + content.getInt(12));
+			System.out.println("NUM A: " + sendData.getInt(12));
+			System.out.println("LEN A: " + sendData.getInt(16));
+			System.out.println("UDP PORT A: " + sendData.getInt(20));
+			System.out.println("SECRET A: " + sendData.getInt(24));
 			
 			
 			
-			byte[] content_byte = content.array();
-			sendData.put(content_byte);
-			assert(content_byte.length == 16);
+			//byte[] content_byte = content.array();
+			//sendData.put(content_byte);
+			//assert(content_byte.length == 16);
 			/*for (int i = 0; i < 16; i++) {
 				sendData[i + 12] = content_byte[i];
 			}*/
@@ -424,10 +424,10 @@ public class Server {
 			return true;
 		}
 
-		public byte[] generate_header(int secret, int content_len) {
-			ByteBuffer header = ByteBuffer.allocate(12);
+		public void generate_header(int secret, int content_len, ByteBuffer header) {
+			//ByteBuffer header = ByteBuffer.allocate(12);
 			header.putInt(content_len).putInt(secret).putShort((short) 2).putShort((short) student_id);
-			return header.array();
+			//return header.array();
 		}
 
 		public void generate_secret() {
