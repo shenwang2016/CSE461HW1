@@ -339,9 +339,11 @@ public class Server {
 		// digits
 		public boolean verify_header(int psecret, ByteBuffer head_buf) {
 			int psecret_get = head_buf.getInt(4);
+			System.out.println("secret: " + psecret_get);
 			int step_num_get = head_buf.getShort(8);
 			System.out.println("step_num: " + step_num_get);
 			int student_id_get = head_buf.getShort(10);
+			System.out.println("student_id: " + student_id_get);
 			System.out.println("enter verify header");
 			if (psecret != psecret_get) {
 				System.out.println("psecret wrong");
