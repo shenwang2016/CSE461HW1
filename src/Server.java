@@ -284,7 +284,7 @@ public class Server {
 			// extract data from server packet
 			byte[] fromClient = receivePacket.getData();
 			ByteBuffer bf = ByteBuffer.wrap(fromClient);
-			student_id = bf.getShort(10);
+			student_id = 927;
 			// verify whether the secret is 0
 			if (!verify_header(0, bf)) {
 				System.out.println("header format problem");
