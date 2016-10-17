@@ -339,15 +339,11 @@ public class Server {
 			System.out.println("len: " + len);
 			System.out.println("appleAA: " + secrets[0]);
 			content.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
-			System.out.println("len A: " + content.getInt(0));
-			System.out.println("psecret A: " + content.getInt(4));
-			System.out.println("step num A: " + content.getInt(8));
-			System.out.println("sid A: " + content.getInt(10));
 			
-			System.out.println("NUM A: " + content.getInt(12));
-			System.out.println("LEN A: " + content.getInt(16));
-			System.out.println("UDP PORT A: " + content.getInt(20));
-			System.out.println("SECRET A: " + content.getInt(24));
+			System.out.println("NUM A: " + content.getInt(0));
+			System.out.println("LEN A: " + content.getInt(4));
+			System.out.println("UDP PORT A: " + content.getInt(8));
+			System.out.println("SECRET A: " + content.getInt(12));
 			
 			
 			
