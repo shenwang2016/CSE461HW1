@@ -118,7 +118,7 @@ public class Server {
 					System.exit(-1);
 				}
 				for (int i = 0; i < len2; i++) {
-					byte temp = in_data.get();
+					byte temp = in_data.get(i + 12);
 					System.out.println("char get: " + temp);
 					if (temp != c) {
 						System.out.println(i);
