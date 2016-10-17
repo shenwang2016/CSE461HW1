@@ -429,6 +429,9 @@ public class Server {
 			short step_num = 2;
 			short student = 927;
 			header.putInt(content_len).putInt(secret).putShort(step_num).putShort(student);
+			System.out.println("fuck");
+			System.out.println(header.getShort(8));
+			System.out.println(header.getShort(10));
 			//return header.array();
 		}
 
