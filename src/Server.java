@@ -238,11 +238,9 @@ public class Server {
 				System.out.println("len a to b: " + len);
 				System.out.println("len b: " + sendData.getInt(0));
 				System.out.println("psecret b: " + sendData.getInt(4));
-				System.out.println("step num b: " + sendData.getInt(8));
-				System.out.println("sid b: " + sendData.getInt(10));
-				
+				System.out.println("step num b: " + sendData.getShort(8));
+				System.out.println("sid b: " + sendData.getShort(10));
 				System.out.println("packid b: " + sendData.getInt(12));
-				//System.out.println("payload len: " + sendData.getInt(16));
 				byte[] send = sendData.array();
 				DatagramPacket sendPacket_b = new DatagramPacket(send, send.length, IPAddress, port);
 				clientSocket.send(sendPacket_b);
@@ -261,11 +259,11 @@ public class Server {
 			
 			System.out.println("len: " + sendData.getInt(0));
 			System.out.println("psecret: " + sendData.getInt(4));
-			System.out.println("step num: " + sendData.getInt(8));
-			System.out.println("sid: " + sendData.getInt(10));
+			System.out.println("step num: " + sendData.getShort(8));
+			System.out.println("sid: " + sendData.getShort(10));
 			System.out.println("tcp_port a to b: " + port_num);
-			System.out.println("tcp port: " + sendData.getInt(12));
-			System.out.println("secretB: " + sendData.getInt(16));
+			System.out.println("tcp port: " + sendData.getInt());
+			System.out.println("secretB: " + sendData.getInt());
 			byte[] send = sendData.array();
 			DatagramPacket sendPacket = new DatagramPacket(send, send.length, IPAddress, port);
 			clientSocket.send(sendPacket);
@@ -326,20 +324,6 @@ public class Server {
 			System.out.println("len: " + len);
 			System.out.println("appleAA: " + secrets[0]);
 			sendData.putInt(num_send).putInt(len).putInt(port_num).putInt(secrets[0]);
-			
-			System.out.println("NUM A: " + sendData.getInt(12));
-			System.out.println("LEN A: " + sendData.getInt(16));
-			System.out.println("UDP PORT A: " + sendData.getInt(20));
-			System.out.println("SECRET A: " + sendData.getInt(24));
-			
-			
-			
-			//byte[] content_byte = content.array();
-			//sendData.put(content_byte);
-			//assert(content_byte.length == 16);
-			/*for (int i = 0; i < 16; i++) {
-				sendData[i + 12] = content_byte[i];
-			}*/
 			
 			System.out.println("len A: " + sendData.getInt(0));
 			System.out.println("psecret A: " + sendData.getInt(4));
