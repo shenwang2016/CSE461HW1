@@ -157,7 +157,7 @@ public class Server {
 			dos.write(sendData, 0, 16);
 		}*/
 
-		/*public ByteBuffer stageC(Socket clientSocket) throws IOException {
+		public ByteBuffer stageC(Socket clientSocket) throws IOException {
 			// send data to client
 			OutputStream out;
 			DataOutputStream dos = null;
@@ -171,33 +171,27 @@ public class Server {
 
 			int actual_payload = 13;
 			int padding_byte = padding_bytes(13);
-			byte[] sendData = new byte[12 + actual_payload + padding_byte];
-			byte[] head = generate_header(secrets[1], actual_payload);
-			for (int i = 0; i < 12; i++) {
-				sendData[i] = head[i];
-			}
-			ByteBuffer content = ByteBuffer.allocate(actual_payload + padding_byte);
+			ByteBuffer sendData = ByteBuffer.allocate(12 + actual_payload + padding_byte);
+			generate_header(0, actual_payload, sendData);
+			//ByteBuffer content = ByteBuffer.allocate(actual_payload + padding_byte);
 			Random rand = new Random();
 			int num2 = rand.nextInt(99) + 1;
 			int len2 = rand.nextInt(499) + 1;
 			// create a random c
 			byte[] c = new byte[1];
 			rand.nextBytes(c);
-			content.putInt(num2).putInt(len2).putInt(secrets[2]).put(c[0]);
+			sendData.putInt(num2).putInt(len2).putInt(secrets[2]).put(c[0]);
 			// stuffing with padding
 			for (int i = 0; i < padding_byte; i++) {
 				byte temp = 0;
-				content.put(temp);
+				sendData.put(temp);
 			}
-			byte[] content_byte = content.array();
-			for (int i = 0; i < content_byte.length; i++) {
-				sendData[i + 12] = content_byte[i];
-			}
-			dos.write(sendData, 0, 12 + actual_payload + padding_byte);
+			byte[] send = sendData.array();
+			dos.write(send, 0, 12 + actual_payload + padding_byte);
 			ByteBuffer from_stage_c = ByteBuffer.allocate(9);
 			from_stage_c.putInt(num2).putInt(len2).put(c);
 			return from_stage_c;
-		}*/
+		}
 
 		@SuppressWarnings("resource")
 		public int stageB(int[] from_stage_a) throws Exception {
