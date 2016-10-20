@@ -58,7 +58,7 @@ public class Server {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			/*int next_port = 0;
+			int next_port = 0;
 			try {
 				next_port = stageB(data);
 			} catch (Exception e) {
@@ -88,7 +88,7 @@ public class Server {
 				stageD(data_from_c, client);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}*/
+			}
 		}
 
 		public void stageD(ByteBuffer from_stage_c, Socket clientSocket) throws IOException {
