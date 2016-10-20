@@ -91,7 +91,7 @@ public class Server {
 			}*/
 		}
 
-		/*public void stageD(ByteBuffer from_stage_c, Socket clientSocket) throws IOException {
+		public void stageD(ByteBuffer from_stage_c, Socket clientSocket) throws IOException {
 			int num2 = from_stage_c.getInt(0);
 			int len2 = from_stage_c.getInt(4);
 			byte c = from_stage_c.get(8);
@@ -143,19 +143,11 @@ public class Server {
 				System.out.println("Read failed");
 				System.exit(-1);
 			}
-			byte[] sendData = new byte[16];
-			byte[] head = generate_header(secrets[3], 4);
-			for (int i = 0; i < 12; i++) {
-				sendData[i] = head[i];
-			}
-			ByteBuffer content = ByteBuffer.allocate(4);
-			content.putInt(secrets[1]);
-			byte[] content_byte = content.array();
-			for (int i = 0; i < content_byte.length; i++) {
-				sendData[i + 12] = content_byte[i];
-			}
-			dos.write(sendData, 0, 16);
-		}*/
+			ByteBuffer sendData = ByteBuffer.allocate(16);
+			generate_header(secrets[2], 4, sendData);
+			sendData.putInt(secrets[3], 12);
+			dos.write(sendData.array(), 0, 16);
+		}
 
 		public ByteBuffer stageC(Socket clientSocket) throws IOException {
 			// send data to client
@@ -172,7 +164,7 @@ public class Server {
 			int actual_payload = 13;
 			int padding_byte = padding_bytes(13);
 			ByteBuffer sendData = ByteBuffer.allocate(12 + actual_payload + padding_byte);
-			generate_header(0, actual_payload, sendData);
+			generate_header(secrets[1], actual_payload, sendData);
 			//ByteBuffer content = ByteBuffer.allocate(actual_payload + padding_byte);
 			Random rand = new Random();
 			int num2 = rand.nextInt(99) + 1;
@@ -180,7 +172,7 @@ public class Server {
 			// create a random c
 			byte[] c = new byte[1];
 			rand.nextBytes(c);
-			sendData.putInt(num2).putInt(len2).putInt(secrets[2]).put(c[0]);
+			sendData.putInt(num2, 12).putInt(len2, 16).putInt(secrets[2], 20).put(c[0]);
 			// stuffing with padding
 			for (int i = 0; i < padding_byte; i++) {
 				byte temp = 0;
@@ -198,7 +190,6 @@ public class Server {
 			int send_num = from_stage_a[0];
 			int len = from_stage_a[1];
 			int port_num = from_stage_a[2];
-			
 			DatagramSocket clientSocket = new DatagramSocket(port_num);
 			int counter = 0;
 			int in_data_size = 12 + len + 4 + padding_bytes(len + 4);
