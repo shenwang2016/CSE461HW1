@@ -200,7 +200,7 @@ public class Server {
 		}*/
 
 		@SuppressWarnings("resource")
-		/*public int stageB(int[] from_stage_a) throws Exception {
+		public int stageB(int[] from_stage_a) throws Exception {
 			int send_num = from_stage_a[0];
 			int len = from_stage_a[1];
 			int port_num = from_stage_a[2];
@@ -246,18 +246,11 @@ public class Server {
 				
 				ByteBuffer sendData = ByteBuffer.allocate(16);
 				//byte[] sendData = new byte[16];
-				byte[] head = generate_header(secrets[0], 4);
-				sendData.put(head);
-				/*for (int i = 0; i < 12; i++) {
-					sendData[i] = head[i];
-				}*/
-				/*byte[] ack = ByteBuffer.allocate(4).putInt(packet_id).array();
-				sendData.put(ack);*/
-				/*for (int i = 0; i < 4; i++) {
-					sendData[12 + i] = ack[i];
-				}*/
+				generate_header(secrets[0], 4, sendData);
+				sendData.putInt(packet_id, 12);
+				
 				// prepare packet
-				/*System.out.println("len a to b: " + len);
+				System.out.println("len a to b: " + len);
 				System.out.println("len b: " + sendData.getInt(0));
 				System.out.println("psecret b: " + sendData.getInt(4));
 				System.out.println("step num b: " + sendData.getInt(8));
@@ -271,26 +264,17 @@ public class Server {
 				counter++;
 			}
 			ByteBuffer sendData = ByteBuffer.allocate(20);
-			byte[] head = generate_header(secrets[0], 8);*/
-			/*for (int i = 0; i < 12; i++) {
-				sendData[i] = head[i];
-			}*/
-			/*sendData.put(head);
-			ByteBuffer content = ByteBuffer.allocate(8);
+			generate_header(secrets[0], 8, sendData);
+			// ByteBuffer content = ByteBuffer.allocate(8);
 			Random rand = new Random();
 			int tcp_port = rand.nextInt(49000) + 1024;
 			while (port_num - 12235 == 0) {
 				tcp_port = rand.nextInt(49000) + 1024;
 			}
 			System.out.println(secrets[1]);
-			content.putInt(tcp_port).putInt(secrets[1]);
-			byte[] content_byte = content.array();
-			sendData.put(content_byte);
-			/*for (int i = 0; i < content_byte.length; i++) {
-				sendData[i + 12] = content_byte[i];
-			}*/
+			sendData.putInt(tcp_port, 12).putInt(secrets[1], 16);
 			
-			/*System.out.println("len: " + sendData.getInt(0));
+			System.out.println("len: " + sendData.getInt(0));
 			System.out.println("psecret: " + sendData.getInt(4));
 			System.out.println("step num: " + sendData.getInt(8));
 			System.out.println("sid: " + sendData.getInt(10));
@@ -302,7 +286,7 @@ public class Server {
 			clientSocket.send(sendPacket);
 			return tcp_port;
 
-		}*/
+		}
 
 		public int[] stageA() throws Exception {
 			// get input from client
