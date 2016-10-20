@@ -225,6 +225,7 @@ public class Server {
 				System.out.println("ack receive header psecret b: " + ack_pack.getInt(4));
 				System.out.println("ack receive header step num b: " + ack_pack.getShort(8));
 				System.out.println("ack receive header sid b: " + ack_pack.getShort(10));
+				
 				int packet_id = ack_pack.getInt(12);
 				System.out.println("check pack_id: " + packet_id);
 				for (int i = 0; i < len; i++) {
