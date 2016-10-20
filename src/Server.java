@@ -262,8 +262,9 @@ public class Server {
 			System.out.println("step num: " + sendData.getShort(8));
 			System.out.println("sid: " + sendData.getShort(10));
 			System.out.println("tcp_port a to b: " + port_num);
-			System.out.println("tcp port: " + sendData.getInt());
-			System.out.println("secretB: " + sendData.getInt());
+			
+			System.out.println("tcp port: " + sendData.getInt(12));
+			System.out.println("secretB: " + sendData.getInt(16));
 			byte[] send = sendData.array();
 			DatagramPacket sendPacket = new DatagramPacket(send, send.length, IPAddress, port);
 			clientSocket.send(sendPacket);
