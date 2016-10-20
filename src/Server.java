@@ -255,7 +255,7 @@ public class Server {
 				tcp_port = rand.nextInt(49000) + 1024;
 			}
 			System.out.println(secrets[1]);
-			sendData.putInt(tcp_port).putInt(secrets[1]);
+			sendData.putInt(12, tcp_port).putInt(16, secrets[1]);
 			
 			System.out.println("len: " + sendData.getInt(0));
 			System.out.println("psecret: " + sendData.getInt(4));
