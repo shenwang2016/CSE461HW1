@@ -242,7 +242,7 @@ public class Server {
 				System.out.println("sid b: " + sendData.getInt(10));
 				
 				System.out.println("packid b: " + sendData.getInt(12));
-				System.out.println("payload len: " + sendData.getInt(16));
+				//System.out.println("payload len: " + sendData.getInt(16));
 				byte[] send = sendData.array();
 				DatagramPacket sendPacket_b = new DatagramPacket(send, send.length, IPAddress, port);
 				clientSocket.send(sendPacket_b);
