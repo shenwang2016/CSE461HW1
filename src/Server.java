@@ -238,7 +238,7 @@ public class Server {
 				// send data
 				ByteBuffer sendData = ByteBuffer.allocate(16);
 				generate_header(secrets[0], 4, sendData);
-				sendData.putInt(packet_id, 12);
+				
 				
 				// prepare packet
 				System.out.println("len a to b: " + len);
@@ -246,6 +246,7 @@ public class Server {
 				System.out.println("psecret b: " + sendData.getInt(4));
 				System.out.println("step num b: " + sendData.getShort(8));
 				System.out.println("sid b: " + sendData.getShort(10));
+				sendData.putInt(packet_id, 12);
 				System.out.println("packid b: " + sendData.getInt(12));
 				byte[] send = sendData.array();
 				DatagramPacket sendPacket_b = new DatagramPacket(send, send.length, IPAddress, port);
@@ -388,6 +389,8 @@ public class Server {
 			short step_num = 2;
 			short student = 927;
 			header.putInt(content_len).putInt(secret).putShort(step_num).putShort(student);
+			System.out.println("header step header: " + header.getInt(0));
+			System.out.println("header step header: " + header.getInt(4));
 			System.out.println("fuck");
 			System.out.println(header.getShort(8));
 			System.out.println(header.getShort(10));
