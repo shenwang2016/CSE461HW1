@@ -24,7 +24,7 @@ public class Server {
 	
 
 	public static void main(String[] args) throws IOException {
-		DatagramSocket serverSocket = new DatagramSocket(12235); 
+		DatagramSocket serverSocket = new DatagramSocket(54321); 
 		while(true){
 			byte[] receiveData = new byte[24];
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -272,7 +272,7 @@ public class Server {
 			// ByteBuffer content = ByteBuffer.allocate(8);
 			Random rand = new Random();
 			int tcp_port = rand.nextInt(49000) + 1024;
-			while (port_num - 12235 == 0) {
+			while (port_num - 54321 == 0) {
 				tcp_port = rand.nextInt(49000) + 1024;
 			}
 			System.out.println(secrets[1]);
@@ -340,7 +340,7 @@ public class Server {
 			Random rand = new Random();
 			int port_num = rand.nextInt(49000) + 1024;
 			System.out.println("port num: " + port_num);
-			while (port_num - 12235 == 0) {
+			while (port_num - 54321 == 0) {
 				port_num = rand.nextInt(49000) + 1024;
 			}
 			int num_send = rand.nextInt(99) + 1;
