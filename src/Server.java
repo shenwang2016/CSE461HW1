@@ -333,7 +333,7 @@ public class Server {
 			// now send packet back to client
 
 			generate_header(0, 16, sendData);
-			System.out.println("fuck generate header");
+			System.out.println("duck generate header");
 			System.out.println(sendData.getShort(8));
 			System.out.println(sendData.getShort(10));
 			
@@ -408,7 +408,7 @@ public class Server {
 			header.putInt(content_len).putInt(secret).putShort(step_num).putShort((short)student_id);
 			System.out.println("header step header: " + header.getInt(0));
 			System.out.println("header step header: " + header.getInt(4));
-			System.out.println("fuck");
+			System.out.println("duck");
 			System.out.println(header.getShort(8));
 			System.out.println(header.getShort(10));
 			//return header.array();
