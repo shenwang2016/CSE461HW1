@@ -27,7 +27,7 @@ public class Client_Update{
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		InetAddress IPAddress = InetAddress.getByName("attu3.cs.washington.edu");
+		InetAddress IPAddress = InetAddress.getByName("attu2.cs.washington.edu");
 		// InetAddress IPAddress = 2601:602:9501:fa7c:3d5c:529a:e276:709f;
 		// array to store secrets
 		int[] secrets = new int[4];
@@ -164,34 +164,59 @@ public class Client_Update{
 		DatagramSocket clientSocket = new DatagramSocket();
 		// build header
 		int actual_payload_len = data_from_prev[1] + 4;
+		/*
 		ByteBuffer header = ByteBuffer.allocate(12);
 		header.putInt(actual_payload_len).putInt(data_from_prev[3]).putShort((short) 1).putShort((short) 927);
+		*/
 		// reinitialize sendData array
 		// if payload size can be divided by 4, we don't need padding
 		int padding = padding_bytes(actual_payload_len);
+		
 		// keep sending packets to server, until count reach to count_max
 		int count_num = 0;
+		/*
 		byte[] sendData = new byte[actual_payload_len + 12 + padding];
 		// save header info into sendData
         byte[] header_array = header.array();
         for (int i = 0; i < 12; i++) {
 			sendData[i] = header_array[i];
 		}
+        */
 		while (true) {
+			///*
+			ByteBuffer sendData = ByteBuffer.allocate(actual_payload_len + 12 + padding);
+			sendData.putInt(actual_payload_len).putInt(data_from_prev[3]).putShort((short) 1).putShort((short) 927);
+			//*/
 			System.out.println("start of while loop");
 			// adding payload starts from here
 		    // put the buffers togther
-		    byte[] packet_id = ByteBuffer.allocate(4).putInt(count_num).array();
+		    /*
+			byte[] packet_id = ByteBuffer.allocate(4).putInt(count_num).array();
 			for (int i = 0; i < 4; i++) {
 				sendData[i + 12] = packet_id[i];
 			}
+			*/
+			
+		    sendData.putInt(12, count_num);
+		    
+		    
 			// add payload content: 0s
+			/*
 			for (int i = 16; i < sendData.length; i++) {
 				byte temp = 0;
 				sendData[i] = temp;
-			}
+			}*/
+			
+		    for (int i = 16; i < actual_payload_len; i++) {
+		    	sendData.put(i, (byte) 0);
+		    }//*/
+			
 			// prepare packet
-			DatagramPacket sendPacket_b = new DatagramPacket(sendData, sendData.length, IPAddress, data_from_prev[2]);
+		    byte[] send = sendData.array();
+			DatagramPacket sendPacket_b = new DatagramPacket(send, send.length, IPAddress, data_from_prev[2]);
+			
+			// DatagramPacket sendPacket_b = new DatagramPacket(sendData, sendData.length, IPAddress, data_from_prev[2]);
+			
 			clientSocket.connect(IPAddress, data_from_prev[2]);
 			if (clientSocket.isConnected()) {
 				System.out.println("Connected");
@@ -262,7 +287,7 @@ public class Client_Update{
 	
 	public static int[] part1_stageA(InetAddress IPAddress) throws UnknownHostException, IOException {
 		DatagramSocket clientSocket = new DatagramSocket();
-		clientSocket.connect(IPAddress, 54321);
+		clientSocket.connect(IPAddress, 12235);
 		if (clientSocket.isConnected()) {
 			System.out.println("Connected");
 		} else {
@@ -279,7 +304,7 @@ public class Client_Update{
 		sendData.put(message_byte);
 		byte[] send_data_a = sendData.array();
 		// send packet from client to server
-		DatagramPacket sendPacket = new DatagramPacket(send_data_a, send_data_a.length, IPAddress,54321);
+		DatagramPacket sendPacket = new DatagramPacket(send_data_a, send_data_a.length, IPAddress,12235);
 		clientSocket.send(sendPacket);
 		// stage a2
 		// send packet from server to client
