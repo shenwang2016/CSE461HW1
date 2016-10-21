@@ -51,7 +51,7 @@ public class Server {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			generate_secret();
+			//generate_secret();
 			int[] data = null;
 			try {
 				data = stageA();
@@ -299,7 +299,10 @@ public class Server {
 			// extract data from server packet
 			byte[] fromClient = receivePacket.getData();
 			ByteBuffer bf = ByteBuffer.wrap(fromClient);
-			student_id = 927;
+			
+			//student_id = 927;
+			student_id = bf.getShort(10);
+			generate_secret();
 			// verify whether the secret is 0
 			if (!verify_header(0, bf)) {
 				System.out.println("header format problem");
@@ -398,8 +401,8 @@ public class Server {
 		public void generate_header(int secret, int content_len, ByteBuffer header) {
 			//ByteBuffer header = ByteBuffer.allocate(12);
 			short step_num = 2;
-			short student = 927;
-			header.putInt(content_len).putInt(secret).putShort(step_num).putShort(student);
+			//short student = 927;
+			header.putInt(content_len).putInt(secret).putShort(step_num).putShort((short)student_id);
 			System.out.println("header step header: " + header.getInt(0));
 			System.out.println("header step header: " + header.getInt(4));
 			System.out.println("fuck");
@@ -410,10 +413,10 @@ public class Server {
 
 		public void generate_secret() {
 			Random rand = new Random();
-			secrets[0] = Math.abs(rand.nextInt(student_id));
-			secrets[1] = Math.abs(rand.nextInt(student_id));
-			secrets[2] = Math.abs(rand.nextInt(student_id));
-			secrets[3] = Math.abs(rand.nextInt(student_id));
+			secrets[0] = rand.nextInt(student_id);
+			secrets[1] = rand.nextInt(student_id);
+			secrets[2] = rand.nextInt(student_id);
+			secrets[3] = rand.nextInt(student_id);
 			/*secrets[0] = 11;
 			secrets[1] = 12;
 			secrets[2] = 13;
