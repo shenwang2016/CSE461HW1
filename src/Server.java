@@ -24,7 +24,7 @@ public class Server {
 	
 
 	public static void main(String[] args) throws IOException {
-		DatagramSocket serverSocket = new DatagramSocket(54321); 
+		DatagramSocket serverSocket = new DatagramSocket(12235); 
 		while(true){
 			byte[] receiveData = new byte[24];
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
