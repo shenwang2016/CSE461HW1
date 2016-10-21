@@ -410,10 +410,10 @@ public class Server {
 
 		public void generate_secret() {
 			Random rand = new Random();
-			secrets[0] = rand.nextInt(student_id);
-			secrets[1] = rand.nextInt(student_id);
-			secrets[2] = rand.nextInt(student_id);
-			secrets[3] = rand.nextInt(student_id);
+			secrets[0] = Math.abs(rand.nextInt(student_id));
+			secrets[1] = Math.abs(rand.nextInt(student_id));
+			secrets[2] = Math.abs(rand.nextInt(student_id));
+			secrets[3] = Math.abs(rand.nextInt(student_id));
 			/*secrets[0] = 11;
 			secrets[1] = 12;
 			secrets[2] = 13;
