@@ -101,11 +101,14 @@ public class Server {
 			// get input from client
 			
 			System.out.println("apple" + clientSocket.isClosed());
-			
+			InputStream in;
+			DataInputStream dis = null;
 			int counter = 0;
 			while (counter != num2) {
+				/*
 				InputStream in;
 				DataInputStream dis = null;
+				*/
 				try {
 					in = clientSocket.getInputStream();
 					dis = new DataInputStream(in);
@@ -115,7 +118,7 @@ public class Server {
 					System.exit(-1);
 				}
 				System.out.println("enter while loop");
-				byte[] data = new byte[12 + len2];
+				byte[] data = new byte[12 + len2 + padding_bytes(len2)];
 				dis.read(data);
 				ByteBuffer in_data = ByteBuffer.wrap(data);
 				System.out.println("stage d len: " + in_data.getInt(0));
