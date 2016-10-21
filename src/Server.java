@@ -95,6 +95,8 @@ public class Server {
 			int num2 = from_stage_c.getInt(0);
 			int len2 = from_stage_c.getInt(4);
 			byte c = from_stage_c.get(8);
+			System.out.println("num of packets: " + num2);
+			System.out.println("length d: " + len2);
 			System.out.println("char origin: " + c);
 			// get input from client
 			
@@ -116,14 +118,22 @@ public class Server {
 				byte[] data = new byte[12 + len2];
 				dis.read(data);
 				ByteBuffer in_data = ByteBuffer.wrap(data);
+				System.out.println("stage d len: " + in_data.getInt(0));
+				System.out.println("stage d psecret: " + in_data.getInt(4));
+				System.out.println("stage d step num: " + in_data.getShort(8));
+				System.out.println("stage d sid: " + in_data.getShort(10));
+				//System.out.println("stage d tcp_port a to b: " + port_num);
+				
 				// verify whether the secret is 0
 				if (!verify_header(secrets[2], in_data)) {
 					System.out.println(counter);
 					System.out.println("header format problem");
 					System.exit(-1);
 				}
+				System.out.println("actual c: " + c);
 				for (int i = 0; i < len2; i++) {
 					byte temp = in_data.get(i + 12);
+					
 					System.out.println("char get: " + temp);
 					if (temp != c) {
 						System.out.println(i);
@@ -145,7 +155,7 @@ public class Server {
 			}
 			ByteBuffer sendData = ByteBuffer.allocate(16);
 			generate_header(secrets[2], 4, sendData);
-			sendData.putInt(secrets[3], 12);
+			sendData.putInt(12, secrets[3]);
 			dos.write(sendData.array(), 0, 16);
 		}
 
@@ -165,23 +175,23 @@ public class Server {
 			int padding_byte = padding_bytes(13);
 			ByteBuffer sendData = ByteBuffer.allocate(12 + actual_payload + padding_byte);
 			generate_header(secrets[1], actual_payload, sendData);
-			//ByteBuffer content = ByteBuffer.allocate(actual_payload + padding_byte);
 			Random rand = new Random();
 			int num2 = rand.nextInt(99) + 1;
 			int len2 = rand.nextInt(499) + 1;
 			// create a random c
 			byte[] c = new byte[1];
 			rand.nextBytes(c);
-			sendData.putInt(num2, 12).putInt(len2, 16).putInt(secrets[2], 20).put(c[0]);
+			sendData.putInt(12, num2).putInt(16, len2).putInt(20, secrets[2]).put(24, c[0]);
 			// stuffing with padding
 			for (int i = 0; i < padding_byte; i++) {
 				byte temp = 0;
-				sendData.put(temp);
+				sendData.put(i + 25, temp);
 			}
 			byte[] send = sendData.array();
 			dos.write(send, 0, 12 + actual_payload + padding_byte);
 			ByteBuffer from_stage_c = ByteBuffer.allocate(9);
-			from_stage_c.putInt(num2).putInt(len2).put(c);
+			from_stage_c.putInt(num2).putInt(len2).put(c[0]);
+			System.out.println("char in stage c: " + c[0]);
 			return from_stage_c;
 		}
 
@@ -247,7 +257,7 @@ public class Server {
 				System.out.println("psecret b: " + sendData.getInt(4));
 				System.out.println("step num b: " + sendData.getShort(8));
 				System.out.println("sid b: " + sendData.getShort(10));
-				sendData.putInt(packet_id, 12);
+				sendData.putInt(12, packet_id);
 				System.out.println("packid b: " + sendData.getInt(12));
 				byte[] send = sendData.array();
 				DatagramPacket sendPacket_b = new DatagramPacket(send, send.length, IPAddress, port);
@@ -399,15 +409,15 @@ public class Server {
 		}
 
 		public void generate_secret() {
-			/*Random rand = new Random();
+			Random rand = new Random();
 			secrets[0] = rand.nextInt(student_id);
 			secrets[1] = rand.nextInt(student_id);
 			secrets[2] = rand.nextInt(student_id);
-			secrets[3] = rand.nextInt(student_id);*/
-			secrets[0] = 11;
+			secrets[3] = rand.nextInt(student_id);
+			/*secrets[0] = 11;
 			secrets[1] = 12;
 			secrets[2] = 13;
-			secrets[3] = 14;
+			secrets[3] = 14;*/
 		}
 
 		public int padding_bytes(int length) {

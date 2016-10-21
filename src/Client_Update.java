@@ -78,21 +78,29 @@ public class Client_Update{
 	public static int part1_stageD(int[] data_from_prev, Socket socket, byte c) throws Exception {
 		System.out.println(socket.isConnected());
 		System.out.println(c);
-		ByteBuffer header = ByteBuffer.allocate(12);
-		header.putInt(data_from_prev[1]).putInt(data_from_prev[2]).putShort((short) 1).putShort((short) 927);
+		// ByteBuffer header = ByteBuffer.allocate(12);
+		// header.putInt(data_from_prev[1]).putInt(data_from_prev[2]).putShort((short) 1).putShort((short) 927);
 		OutputStream out = socket.getOutputStream(); 
 	    DataOutputStream dos = new DataOutputStream(out);
-	    byte[] head = header.array();
+	    // byte[] head = header.array();
 	    int padding = padding_bytes(data_from_prev[1]);
-	    byte[] sendData = new byte[12 + data_from_prev[1] + padding];
+	    // byte[] sendData = new byte[12 + data_from_prev[1] + padding];
+	    ByteBuffer sendData = ByteBuffer.allocate(12 + data_from_prev[1] + padding);
 	    // store header
+	    /*
 	    for (int i = 0; i < 12; i++) {
 	    	sendData[i] = head[i];
-	    }
+	    }*/
+	    sendData.putInt(data_from_prev[1]).putInt(data_from_prev[2]).putShort((short) 1).putShort((short) 927);
 	    // stuff with content of Cs
-    	int count = 0;
+    	/* int count = 0;
     	while (count < data_from_prev[1]) {
     		sendData[count + 12] = c;
+    		count++;
+    	}*/
+	    int count = 0;
+    	while (count < data_from_prev[1]) {
+    		sendData.put(c);
     		count++;
     	}
 	    boolean error = false;
@@ -110,7 +118,7 @@ public class Client_Update{
 	    		continue;
 	    	}
 	    	//send the data
-	    	dos.write(sendData, 0, 12 + data_from_prev[1] + padding);
+	    	dos.write(sendData.array(), 0, 12 + data_from_prev[1] + padding);
 	    	count_num++;
 	    	if (count_num == data_from_prev[0]) break;
 	    }
